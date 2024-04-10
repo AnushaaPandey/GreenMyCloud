@@ -1,0 +1,35 @@
+<!-- carbon_calculator.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Carbon Calculator</title>
+</head>
+<body>
+    <h1>Personal Carbon Calculator App</h1>
+    <form method="post" action="{% url 'carbon_calculator' %}">
+        {% csrf_token %}
+        <!-- <label for="country">Country:</label>
+        <select name="country" id="country">
+            <option value="Nepal">Nepal</option>
+        </select><br><br> -->
+        
+        <label for="distance">Daily commute distance (in km):</label>
+        <input type="number" name="distance" id="distance"><br><br>
+        
+        <label for="electricity">Monthly electricity consumption (in kWh):</label>
+        <input type="number" name="electricity" id="electricity"><br><br>
+        
+        <label for="waste">Waste generated per week (in kg):</label>
+        <input type="number" name="waste" id="waste"><br><br>
+        
+        <label for="meals">Number of meals per day:</label>
+        <input type="number" name="meals" id="meals"><br><br>
+        
+        <label for="screentime">Phone Hours of uses per day:</label>
+        <input type="number" name="screentime" id="screentime"><br><br>
+
+        <input type="submit" value="Calculate CO2 Emissions">
+    </form>
+</body>
+</html>
