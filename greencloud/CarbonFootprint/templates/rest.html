@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Footprint Results</title>
+</head>
+<body>
+    <h1>Carbon Calculator Results</h1>
+    <p>Here are the results of your carbon footprint calculation:</p>
+    <ul>
+        <li>Total carbon emissions: {{ carbon_footprint_results.total_emissions }} kg CO2</li>
+        <li>Breakdown of emissions:</li>
+        <ul>
+            <!-- Example HTML template (e.g., carbon_calculator_results.html) -->
+
+
+    
+        <form method="post">
+            {% csrf_token %}
+            
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name">
+            
+            <!-- Submit button -->
+            <button type="submit">Submit</button>
+        </form>
+
+            <li>Transportation: {{ carbon_footprint_results.transportation_emissions }} kg CO2</li>
+            <li>Energy Usage: {{ carbon_footprint_results.energy_emissions }} kg CO2</li>
+            <!-- Add more breakdown items as needed -->
+        </ul>
+    </ul>
+</body>
+</html>
+
+
+<!-- carbon_calculator_results.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Carbon Calculator Results</title>
+</head>
+<body>
+    <h1>Results</h1>
+
+    <h2>Carbon Emissions by Category</h2>
+    <form method="post" action="{% url 'carbon_calculator_results' %}">
+        {% csrf_token %}
+        
+        <label for ="distance">Carbon Emitted:</label>
+
+        <button type="submit">Submit</button>
+    </form>
+    
+</body>
+</html> -->
