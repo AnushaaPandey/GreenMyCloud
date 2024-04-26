@@ -11,6 +11,18 @@
  <link rel="stylesheet" href="{% static "css/style.css" %}">
 </head>
 <body>
-  {% block content %}{% endblock content %}
+  <div class="header">
+    <!-- Header content here -->
+    Articles based on the files
+</div>
+
+<div class="content">
+    {% block content %}
+    {% endblock %}
+</div>
+<div class="footer">
+  <!-- Footer content here -->
+  further details
+</div>
 </body>
 </html>

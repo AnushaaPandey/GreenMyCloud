@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import datetime
+
 # import rest_framework 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,7 +28,7 @@ SECRET_KEY = 'django-insecure-!5s*!s(itolw9pt4e#s)ode!8dj$xq%w&3$(zls1j8w3ef4#5w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     'CarbonFootprint',
     'rest_framework',
     'corsheaders',
+    'settingsapp',
 ]
 
 MIDDLEWARE = [
@@ -83,7 +85,18 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'GreenCloud',
+        # 'USER': 'admin',
+        # 'PASSWORD': 'admin001',
+        # 'HOST': '127.0.0.1',  # Or your database host
+        # 'PORT': '3306',    
+        # 'OPTIONS': {
+        #     'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"', 
+        #     'autocommit': True,  
+    # }
+
+}
 }
 
 

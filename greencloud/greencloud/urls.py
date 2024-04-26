@@ -28,6 +28,8 @@ urlpatterns = [
     path("", include(('CarbonFootprint.urls', "CarbonFootprint"), "CarbonFootprint")),
     path('api-auth/', include('rest_framework.urls')),
     path('api/v1.0/user', include('CarbonFootprint.urls')),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-] + static(settings.STATIC_URL)
+]
+    # path('api/v1.0/app', include('settingsapp.urls')),
+    # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+# ] + static(settings.STATIC_URL)

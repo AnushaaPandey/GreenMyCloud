@@ -5,21 +5,19 @@
   <meta http-equiv='X-UA-Compatible' content='IE=edge'>
   <title>Page Title</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-  <script src='main.js'></script>
+  <!-- <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+  <script src='main.js'></script> -->
 </head>
 <body>
-  {% extends "carbonfootprint.html" %}  
   {% block content %}
-home page
-<a href="{% url "CarbonFootprint:logout" %}">logout</a>
-{% endblock content %}
-
-<strong>ELectict Sample API</strong>
-{% for i in response %}
-{{i.message}}
-{% endfor %}
-
+    home page
+    <a href="{% url 'user-logout' %}">Logout here</a>
+    {% include 'calc.html' %}
+  {% endblock content %}
+  
+  <strong>Electric Sample API</strong>
+  {% for i in response %}
+  {{ i.message }}
+  {% endfor %}
 </body>
 </html>
-
