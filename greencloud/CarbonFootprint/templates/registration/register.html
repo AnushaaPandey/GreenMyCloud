@@ -5,14 +5,33 @@
     <form method="POST" autocomplete="off">
 
         {% csrf_token %}
+        {{form.name.label}}
+        {{form.name}}
 
+        {{form.username.label}}
+        {{form.username}}
+
+        {{form.email.label}}
+        {{form.email}}
+
+        {{form.password1.label}}
+        {{form.password1}}
+
+        {{form.password2.label}}
+        {{form.password2}}
+       
         {{registerform.as_p}}
 
         <input type="submit" value="Register"/>
 
 
     </form>
-
-
-
 </html>
+
+
+
+
+<!-- {% for field in form %}
+{{field}}
+{{field.label}}
+{% endfor %} -->

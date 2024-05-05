@@ -1,9 +1,5 @@
 {
   "dependencies": {
-    "@react-navigation/native": "^6.1.17",
-    "@react-navigation/stack": "^6.3.29"
-  },
-  "devDependencies": {
-    "@babel/plugin-proposal-async-generator-functions": "^7.20.7"
+    "@expo/vector-icons": "^14.0.1"
   }
 }

@@ -1,26 +1,27 @@
 from django.shortcuts import render, redirect 
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate, login, logout
-from .forms import LoginForm
+from .forms import LoginForm, CreateUserForm
 from .factors import calculate_emissions
-from .models import EmissionData 
+from .models import User, UserData, AdminDatabase, EmissionData, Register, Result 
 
 def homepage(request):
     return render(request, 'registration/index.html')
 
 def register(request):
-    form = UserCreationForm()
+    form = CreateUserForm()
 
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CreateUserForm(request.POST)
         if form.is_valid():
-            form.save()
+            form.save() 
             return redirect("my-login")
 
-    context = {'registerform': form}
+    context = {'form': form}
     return render(request, 'registration/register.html', context=context)
 
 def my_login(request):
@@ -35,8 +36,10 @@ def my_login(request):
             if user is not None:
                 auth.login(request, user)
                 return redirect("dashboard")
+            else:
+                messages.info(request, 'Username or Password is incorrect. ')
 
-    context = {'loginform': form}
+    context = {'form': form}
     return render(request, 'registration/my-login.html', context=context)
 
 def user_logout(request):
@@ -116,9 +119,31 @@ def api(APIView):
    
 
 
+def data(request):
+    data = {
+        'message': 'Hello, World!'
+    }
+    return JsonResponse(data)
 
 
 
+# Models Import:
+def user(request):
+    users = User.objects.all()
+    return render(request, 'user.html', {'users': users})
+
+def userdata(request):
+    usersdata = UserData.objects.all()
+    return render(request, 'user.html', {'usersdata': usersdata})
+
+def results(request):
+    res = Result.objects.all()
+    return render(request, 'user.html', {'res': res})
+
+
+def admin_database(request):
+    admin_databases = AdminDatabase.objects.all()
+    return render(request, 'admin_database.html', {'admin_databases': admin_databases})
 
 
 

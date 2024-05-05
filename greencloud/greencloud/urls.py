@@ -25,7 +25,8 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include(('CarbonFootprint.urls', "CarbonFootprint"), "CarbonFootprint")),
+    path('CarbonFootprint/', include('CarbonFootprint.urls')),
+    # path("", include(('CarbonFootprint.urls', "CarbonFootprint"), "CarbonFootprint")),
     path('api-auth/', include('rest_framework.urls')),
     path('api/v1.0/user', include('CarbonFootprint.urls')),
 ]

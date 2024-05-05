@@ -3,38 +3,58 @@ from .factors import calculate_emissions
 
 # Create your models here.
 
+class Register(models.Model):
+    username = models.CharField(max_length=128)
+    name = models.CharField(max_length=128)
+    surname = models.CharField(max_length=128)
+    date_of_birth = models.DateField()
+    gender = models.CharField(max_length=128)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=128)
+    re_password = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.username
+    
+
+
+class User(models.Model):
+    username = models.CharField(max_length=128)
+    password = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.username
+
+class UserData(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    transportation = models.FloatField(max_length=128)
+    mode_of_transportation = models.CharField(max_length=128)
+    waste = models.FloatField(max_length=128)
+    dietary_plan = models.FloatField(max_length=128)
+    electricity = models.FloatField()
+    screentime = models.FloatField()
+
+class Result(models.Model):
+    res_transportation = models.FloatField()
+    res_waste = models.FloatField()
+    res_dietary_plan = models.FloatField()
+    res_electricity = models.FloatField()
+    res_screentime = models.FloatField()
+    total = models.FloatField()
 
 class EmissionData(models.Model):
-    transportation_emissions = models.FloatField()
-    electricity_emissions = models.FloatField()
-    diet_emissions = models.FloatField()
-    waste_emissions = models.FloatField()
-    screentime_emission = models.FloatField()
-    total_emissions = models.FloatField()
+    transportation_emissions = models.FloatField(100)
+    electricity_emissions = models.FloatField(100)
+    diet_emissions = models.FloatField(100)
+    waste_emissions = models.FloatField(100)
+    screentime_emission = models.FloatField(100)
+    total_emissions = models.FloatField(100)
 
-# views.py
-from .models import EmissionData
 
-def carbon_calculator(request):
-    if request.method == 'POST':
-        # Calculate emissions data
-        emissions_data = calculate_emissions(distance, electricity, waste, meals, screentime)
+class AdminDatabase(models.Model):
+    api_data = models.JSONField()
+    articles = models.TextField()
 
-        # Save emissions data to the database
-        emission_record = EmissionData.objects.create(
-            transportation_emissions=emissions_data["transportation_emissions"],
-            electricity_emissions=emissions_data["electricity_emissions"],
-            diet_emissions=emissions_data["diet_emissions"],
-            waste_emissions=emissions_data["waste_emissions"],
-            screentime_emission=emissions_data["screentime_emission"],
-            total_emissions=emissions_data["total_emissions"]
-        )
+    def __str__(self):
+        return self.api_data
 
-        # Optionally, you can also save other relevant data along with emissions_data
-        # For example:
-        # emission_record.user = request.user
-        # emission_record.save()
-
-        return render(request, 'rest.html', {'emissions_data': emissions_data})
-    else:
-        return render(request, 'calc.html')
