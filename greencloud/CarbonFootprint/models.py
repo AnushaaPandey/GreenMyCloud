@@ -1,5 +1,5 @@
 from django.db import models
-from .factors import calculate_emissions
+from .factors1 import calculate_emissions
 
 # Create your models here.
 
@@ -27,12 +27,12 @@ class User(models.Model):
 
 class UserData(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    transportation = models.FloatField(max_length=128)
+    transportation_emissions = models.FloatField(max_length=128)
     mode_of_transportation = models.CharField(max_length=128)
-    waste = models.FloatField(max_length=128)
-    dietary_plan = models.FloatField(max_length=128)
+    waste_emissions = models.FloatField(max_length=128)
+    diet_emissions = models.FloatField(max_length=128)
     electricity = models.FloatField()
-    screentime = models.FloatField()
+    screentime_emissions = models.FloatField()
 
 class Result(models.Model):
     res_transportation = models.FloatField()

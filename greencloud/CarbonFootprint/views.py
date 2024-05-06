@@ -6,7 +6,7 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate, login, logout
 from .forms import LoginForm, CreateUserForm
-from .factors import calculate_emissions
+from .factors1 import calculate_emissions
 from .models import User, UserData, AdminDatabase, EmissionData, Register, Result 
 
 def homepage(request):
@@ -68,20 +68,20 @@ def rest(request):
     # Your logic for carbon_calculator_results view
     return render(request, 'rest.html')
 
-def calc(request):
-    if request.method == 'POST':
-        distance = float(request.POST.get('distance', 0))
-        electricity = float(request.POST.get('electricity', 0))
-        waste = float(request.POST.get('waste', 0))
-        meals = int(request.POST.get('meals', 0))
-        screentime = int(request.POST.get('screentime', 0))
+# def calc(request):
+#     if request.method == 'POST':
+#         distance = float(request.POST.get('distance', 0))
+#         electricity = float(request.POST.get('electricity', 0))
+#         waste = float(request.POST.get('waste', 0))
+#         meals = int(request.POST.get('meals', 0))
+#         screentime = int(request.POST.get('screentime', 0))
 
-        # Calculate emissions using the calculate_emissions function from factors.py
-        emissions_data = calculate_emissions(distance, electricity, waste, meals, screentime)
+#         # Calculate emissions using the calculate_emissions function from factors.py
+#         emissions_data = calculate_emissions(distance, electricity, waste, meals, screentime)
 
-        return render(request, 'rest.html', {'emissions_data': emissions_data})
-    else:
-        return render(request, 'calc.html')
+#         return render(request, 'rest.html', {'emissions_data': emissions_data})
+#     else:
+#         return render(request, 'calc.html')
 
 
 

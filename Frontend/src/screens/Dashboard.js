@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import axios from "axios";
 
 export default function App() {
   // Dummy news data
@@ -7,9 +8,28 @@ export default function App() {
     { id: 1, title: 'News 1', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
     { id: 2, title: 'News 2', content: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
     { id: 3, title: 'News 3', content: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' },
-    // Add more dummy news data as needed
+   
   ];
-
+  const Dashboard = () => {
+    const [data, setData] = useState(null);
+  
+    useEffect(() => {
+      fetchData();
+    }, []);
+    if (!data) {
+      return <Text>Loading...</Text>;
+    }
+    else {
+      console.error(error);
+    }
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/data/");
+      setData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -80,3 +100,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+// export default Dashboard;

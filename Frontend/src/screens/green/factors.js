@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
-import { calculate_emissions } from './backend'; // Import your backend code
+import { calculate_emissions } from '.\greencloud\CarbonFootprint\factors.py'; // Import your backend code
 
 export default function EmissionCalculatorPage() {
   const [distance, setDistance] = useState('');

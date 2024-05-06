@@ -1,18 +1,5 @@
-// import React from 'react';
-// import { StatusBar } from 'expo-status-bar';
-// import { StyleSheet, Text, View } from 'react-native';
-// import HomePage from './src/screens/HomePage';
-
-
-
-// export default function App() {
-//   return
-//   <HomePage />
-
-// }
-
 import React from "react";
-import AppNavigator from "./src/navigation/AppNavigator";
+import HomePage from "./src/screens/HomePage";
 import { AuthProvider } from "./src/provider/AuthProvider";
 import { ThemeProvider } from "react-native-rapi-ui";
 import { LogBox } from "react-native";
@@ -44,10 +31,8 @@ export default function App(props) {
   return (
     <ThemeProvider images={images}>
       <AuthProvider>
-        <AppNavigator />
+        <HomePage />
       </AuthProvider>
     </ThemeProvider>
   );
 }
-
-
