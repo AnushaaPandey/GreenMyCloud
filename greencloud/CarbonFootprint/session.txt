@@ -1,0 +1,515 @@
+Rest.html ko code:
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carbon Footprint Results</title>
+</head>
+<body>
+    <h1>Carbon Calculator Results</h1>
+    <p>Here are the results of your carbon footprint calculation:</p>
+    <ul>
+        <li>Total carbon emissions: {{ carbon_footprint_results.total_emissions }} kg CO2</li>
+        <li>Breakdown of emissions:</li>
+        <ul>
+            Example HTML template (e.g., carbon_calculator_results.html) -->
+
+
+    
+        <!-- <form method="post">
+            {% csrf_token %}
+            
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name">
+            
+            Submit button
+            <button type="submit">Submit</button>
+        </form>
+
+            <li>Transportation: {{ carbon_footprint_results.transportation_emissions }} kg CO2</li>
+            <li>Energy Usage: {{ carbon_footprint_results.energy_emissions }} kg CO2</li>
+            Add more breakdown items as needed
+        </ul>
+    </ul>
+</body>
+</html> -->
+
+<!-- carbon_calculator_results.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Carbon Calculator Results</title>
+</head>
+<body>
+    <h1>Results</h1>
+
+    <h2>Carbon Emissions by Category</h2>
+    <form method="post" action="{% url 'carbon_calculator_results' %}">
+        {% csrf_token %}
+        
+        <label for ="distance">Carbon Emitted:</label>
+
+        <button type="submit">Submit</button>
+    </form>
+    
+</body>
+</html> -->
+
+
+Login.html ko code:
+{% extends "carbonfootprint.html" %}
+{% block content %}
+<div class="shadow-wrap">
+ <div class="form-wrap">
+  <h3>Login </h3>
+<form method="POST">
+ {% csrf_token %}
+ {{form}}
+ <button type="submit">Submit</button>
+</form>
+<a class="signup-link" href="{% url "CarbonFootprint:authView" %}">Signup</a>
+</div>
+</div>
+{% endblock content %}
+
+Signup.html code:
+{% extends "carbonfootprint.html" %}
+{% block content %}
+<div class="shadow-wrap">
+ <div class="form-wrap">
+  <h3>Signup </h3>
+<form method="POST">
+ {% csrf_token %}
+ {{form}}
+ <button type="submit">Submit</button>
+</form>
+<a class="signup-link" href="{% url "CarbonFootprint:login" %}">Login</a>
+</div>
+</div>
+{% endblock content %}
+
+CF Urls.py:
+from django.urls import path , include
+from .views import  calc, elec_api, api
+import rest_framework 
+# from .views import factors
+from . import views
+# from .views import rest
+from rest_framework_simplejwt.views import TokenRefreshView
+
+urlpatterns = [
+  # path("", home, name="home"),
+  # path("signup/", authView, name="authView"),
+  # path("accounts/", include("django.contrib.auth.urls")),
+  # path('calc', calc, name='calc'),
+  # path('rest', rest, name='rest'),
+  # path('elec',elec_api, name='elec_api'),
+  # path ('api', api ),
+  # path('api/v1.0/settings/', include ("settingsapp.urls"))
+
+  # path('', views.homepage, name=""),
+  path('register', views.register, name="register"),
+  path('my-login', views.my_login, name="my_login"),
+  path('dashboard', views.dashboard, name="dashboard"),
+  path('user-logout', views.user_logout, name="user-logout"),
+  
+  # path('api/', api, name='api'),
+   # path('admin/', admin.site.urls),
+]
+
+CF Views.py:
+from django.shortcuts import render, redirect 
+import requests
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from .templates.utils.api_util import estimate_emission 
+from .templates.factors import calculate_emissions
+from django.http import JsonResponse
+from django.http import HttpResponse
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+
+from django.contrib.auth.models import auth
+from django.contrib.auth import authenticate, login, logout
+
+
+def homepage(request):
+
+    return render(request, 'registration/index.html')
+
+
+def register(request):
+
+    form = CreateUserForm()
+
+    if request.method == "POST":
+
+        form = CreateUserForm(request.POST)
+
+        if form.is_valid():
+
+            form.save()
+
+            return redirect("my-login")
+
+
+    context = {'registerform':form}
+
+    return render(request, 'registration/register.html', context=context)
+
+
+
+def my_login(request):
+
+    form = LoginForm()
+
+    if request.method == 'POST':
+
+        form = LoginForm(request, data=request.POST)
+
+        if form.is_valid():
+
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+
+            user = authenticate(request, username=username, password=password)
+
+            if user is not None:
+
+                auth.login(request, user)
+
+                return redirect("dashboard")
+
+
+    context = {'loginform':form}
+
+    return render(request, 'registration/my-login.html', context=context)
+
+
+def user_logout(request):
+
+    auth.logout(request)
+
+    return redirect("")
+
+
+
+@login_required(login_url="my_login")
+def dashboard(request):
+
+    return render(request, 'registration/dashboard.html')
+
+
+# Create your views here.
+# @login_required
+# def home(request):
+#    return render(request, "home.html", {})
+
+
+# def authView(request):
+#   if request.method == "POST":
+#      form = UserCreationForm(request.POST )
+#      if form.is_valid():
+#         form.save()
+#   else:
+#      form = UserCreationForm()
+#   return render(request, "registration/signup.html", {"form":form})
+
+def calc(request):
+    if request.method == 'POST':
+        distance = float(request.POST.get('distance', 0))
+        electricity = float(request.POST.get('electricity', 0))
+        waste = float(request.POST.get('waste', 0))
+        meals = int(request.POST.get('meals', 0))
+        screentime = int(request.POST.get('screentime',0))
+
+        emissions_data = calculate_emissions( distance, electricity, waste, meals, screentime)
+
+        return render(request, 'rest.html', {'emissions_data': emissions_data})
+    else:
+        return render(request, 'calc.html')
+    
+# def rest(request):
+#     # Your logic for carbon_calculator_results view
+#     return render(request, 'templates/rest.html')
+
+def elec_api(request):
+   response=request.get('https://preview.api.climatiq.io/travel/v1-preview1/distance').json()
+   return render (request, 'calc.html', {'response':response})
+
+def api(APIView):
+   CLIMATIQ_API_KEY = "87BKX60S4TMRRGPZZ1342ZZZYTK4"
+   weight = 80
+   weight_unit = "t"
+   emission_estimate = estimate_emission(CLIMATIQ_API_KEY, weight, weight_unit)
+   if emission_estimate is not None:
+        print("API was Called")
+        return JsonResponse(emission_estimate)
+   else:
+        return JsonResponse({"error": "Failed to estimate emission"}, status=500)
+   
+   def get(self, request, format=None):
+      print("API was Called")
+      return Response("CHalyo hai chalyo", status=201)
+   
+
+
+class TestView(APIView):
+    def get(self, request, format=None):
+        print("API Was Called")
+        return Response("You Made It", status=200)
+
+
+
+
+Carbonfootprint.html code:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Login Registration</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;700&display=swap" rel="stylesheet">
+ {% load static %}
+ <link rel="stylesheet" href="{% static "css/style.css" %}">
+</head>
+<body>
+  {% block content %}{% endblock content %}
+</body>
+</html>
+
+
+
+Factors.py manual calculation code:
+# # emission_calculator.py
+
+
+EMISSION_FACTORS = {
+    "Nepal": {
+        "Transportation": 0.14,  # kgCO2/km
+        "Electricity": 0.82,  # kgCO2/kWh
+        "Diet": 1.25,  # kgCO2/meal, 2.5kgco2/kg
+        "Waste": 0.1 , # kgCO2/kg
+        "screentime": (0.25) #energy consumption per hour
+    }
+}
+
+def calculate_emissions(distance, electricity, waste, meals, screentime):
+    # Normalize inputs
+    distance_yearly = distance * 365 if distance > 0 else 0
+    electricity_yearly = electricity * 12 if electricity > 0 else 0
+    meals_yearly = meals * 365 if meals > 0 else 0
+    waste_yearly = waste * 52 if waste > 0 else 0
+    screentime_yearly = screentime * 40 if screentime > 0 else 0
+
+    # Calculate carbon emissions using generic emission factors
+    transportation_emissions = EMISSION_FACTORS["Nepal"]["Transportation"] * distance_yearly
+    electricity_emissions = EMISSION_FACTORS["Nepal"]["Electricity"] * electricity_yearly
+    diet_emissions = EMISSION_FACTORS["Nepal"]["Diet"] * meals_yearly
+    waste_emissions = EMISSION_FACTORS["Nepal"]["Waste"] * waste_yearly
+    screentime_emission = EMISSION_FACTORS["Nepal"]["screentime"] * screentime_yearly
+
+    # Convert emissions to tonnes and round off to 2 decimal points
+    transportation_emissions = round(transportation_emissions / 1000, 2)
+    electricity_emissions = round(electricity_emissions / 1000, 2)
+    diet_emissions = round(diet_emissions / 1000, 2)
+    waste_emissions = round(waste_emissions / 1000, 2) 
+    screentime_emission = round(screentime_emission / 1000, 2)
+
+    # Calculate total emissions
+    total_emissions = round(
+        transportation_emissions + electricity_emissions + diet_emissions + waste_emissions + screentime_emission, 2
+    )
+
+    # Print the emissions
+    print("Transportation emissions:", transportation_emissions)
+    print("Electricity emissions:", electricity_emissions)
+    print("Diet emissions:", diet_emissions)
+    print("Waste emissions:", waste_emissions)
+    print("Screentime emissions:", screentime_emission)
+    print("Total emissions:", total_emissions)
+
+    return {
+        "transportation_emissions": transportation_emissions,
+        "electricity_emissions": electricity_emissions,
+        "diet_emissions": diet_emissions,
+        "waste_emissions": waste_emissions,
+        "screentime_emission": screentime_emission,
+        "total_emissions": total_emissions
+    }
+
+
+
+
+# EMISSION_FACTORS = {
+#     "Nepal": {
+#         "Transportation": 0.14,  # kgCO2/km
+#         "Electricity": 0.82,  # kgCO2/kWh
+#         "Diet": 1.25,  # kgCO2/meal, 2.5kgco2/kg
+#         "Waste": 0.1 , # kgCO2/kg
+#         "screentime": (0.25) #energy consumption per hour
+#     }
+# }
+
+# def calculate_emissions(country, distance, electricity, waste, meals, screentime):
+#     # Normalize inputs
+#     distance_yearly = distance * 365 if distance > 0 else 0
+#     electricity_yearly = electricity * 12 if electricity > 0 else 0
+#     meals_yearly = meals * 365 if meals > 0 else 0
+#     waste_yearly = waste * 52 if waste > 0 else 0
+#     screentime_yearly = screentime * 40 if screentime > 0 else 0
+
+#     # Calculate carbon emissions
+#     transportation_emissions = EMISSION_FACTORS[country]["Transportation"] * distance_yearly
+#     electricity_emissions = EMISSION_FACTORS[country]["Electricity"] * electricity_yearly
+#     diet_emissions = EMISSION_FACTORS[country]["Diet"] * meals_yearly
+#     waste_emissions = EMISSION_FACTORS[country]["Waste"] * waste_yearly
+#     screentime = EMISSION_FACTORS[country]["screentime"] * screentime_yearly
+
+#     # Convert emissions to tonnes and round off to 2 decimal points
+#     transportation_emissions = round(transportation_emissions / 1000, 2)
+#     electricity_emissions = round(electricity_emissions / 1000, 2)
+#     diet_emissions = round(diet_emissions / 1000, 2)
+#     waste_emissions = round(waste_emissions / 1000, 2) 
+#     screentime_emission = round(screentime / 1000, 2)
+
+#     # Calculate total emissions
+#     total_emissions = round(
+#         transportation_emissions + electricity_emissions + diet_emissions + waste_emissions+screentime_emission, 2
+#     )
+
+#     print( {"transportation_emissions": transportation_emissions,
+#         "electricity_emissions": electricity_emissions,
+#         "diet_emissions": diet_emissions,
+#         "waste_emissions": waste_emissions,
+#         "screentime_emission": screentime_emission,
+#         "total_emissions": total_emissions})
+
+#     return {
+#         "transportation_emissions": transportation_emissions,
+#         "electricity_emissions": electricity_emissions,
+#         "diet_emissions": diet_emissions,
+#         "waste_emissions": waste_emissions,
+#         "screentime_emission": screentime_emission,
+#         "total_emissions": total_emissions
+        
+#     }
+
+
+
+Factors.py code:
+
+EMISSION_FACTORS = {
+#     "Nepal": {
+#         "Transportation": 0.14,  # kgCO2/km
+#         "Electricity": 0.82,  # kgCO2/kWh
+#         "Diet": 1.25,  # kgCO2/meal, 2.5kgco2/kg
+#         "Waste": 0.1 , # kgCO2/kg
+#         "screentime": (0.25) #energy consumption per hour
+#     }
+# }
+
+# def calculate_emissions(distance, electricity, waste, meals, screentime):
+#     # Normalize inputs
+#     distance_yearly = distance * 365 if distance > 0 else 0
+#     electricity_yearly = electricity * 12 if electricity > 0 else 0
+#     meals_yearly = meals * 365 if meals > 0 else 0
+#     waste_yearly = waste * 52 if waste > 0 else 0
+#     screentime_yearly = screentime * 40 if screentime > 0 else 0
+
+#     # Calculate carbon emissions using generic emission factors
+#     transportation_emissions = EMISSION_FACTORS["Nepal"]["Transportation"] * distance_yearly
+#     electricity_emissions = EMISSION_FACTORS["Nepal"]["Electricity"] * electricity_yearly
+#     diet_emissions = EMISSION_FACTORS["Nepal"]["Diet"] * meals_yearly
+#     waste_emissions = EMISSION_FACTORS["Nepal"]["Waste"] * waste_yearly
+#     screentime_emission = EMISSION_FACTORS["Nepal"]["screentime"] * screentime_yearly
+
+#     # Convert emissions to tonnes and round off to 2 decimal points
+#     transportation_emissions = round(transportation_emissions / 1000, 2)
+#     electricity_emissions = round(electricity_emissions / 1000, 2)
+#     diet_emissions = round(diet_emissions / 1000, 2)
+#     waste_emissions = round(waste_emissions / 1000, 2) 
+#     screentime_emission = round(screentime_emission / 1000, 2)
+
+#     # Calculate total emissions
+#     total_emissions = round(
+#         transportation_emissions + electricity_emissions + diet_emissions + waste_emissions + screentime_emission, 2
+#     )
+
+#     # Print the emissions
+#     print("Transportation emissions:", transportation_emissions)
+#     print("Electricity emissions:", electricity_emissions)
+#     print("Diet emissions:", diet_emissions)
+#     print("Waste emissions:", waste_emissions)
+#     print("Screentime emissions:", screentime_emission)
+#     print("Total emissions:", total_emissions)
+
+#     # return {
+#     #     "transportation_emissions": transportation_emissions,
+#     #     "electricity_emissions": electricity_emissions,
+#     #     "diet_emissions": diet_emissions,
+#     #     "waste_emissions": waste_emissions,
+#     #     "screentime_emission": screentime_emission,
+#     #     "total_emissions": total_emissions
+#     # }
+
+
+# EMISSION_FACTORS = {
+#     "Nepal": {
+#         "Transportation": 0.14,  # kgCO2/km
+#         "Electricity": 0.82,  # kgCO2/kWh
+#         "Diet": 1.25,  # kgCO2/meal, 2.5kgco2/kg
+#         "Waste": 0.1 , # kgCO2/kg
+#         "screentime": (0.25) #energy consumption per hour
+#     }
+# }
+
+# def calculate_emissions(country, distance, electricity, waste, meals, screentime):
+#     # Normalize inputs
+#     distance_yearly = distance * 365 if distance > 0 else 0
+#     electricity_yearly = electricity * 12 if electricity > 0 else 0
+#     meals_yearly = meals * 365 if meals > 0 else 0
+#     waste_yearly = waste * 52 if waste > 0 else 0
+#     screentime_yearly = screentime * 40 if screentime > 0 else 0
+
+#     # Calculate carbon emissions
+#     transportation_emissions = EMISSION_FACTORS[country]["Transportation"] * distance_yearly
+#     electricity_emissions = EMISSION_FACTORS[country]["Electricity"] * electricity_yearly
+#     diet_emissions = EMISSION_FACTORS[country]["Diet"] * meals_yearly
+#     waste_emissions = EMISSION_FACTORS[country]["Waste"] * waste_yearly
+#     screentime = EMISSION_FACTORS[country]["screentime"] * screentime_yearly
+
+#     # Convert emissions to tonnes and round off to 2 decimal points
+#     transportation_emissions = round(transportation_emissions / 1000, 2)
+#     electricity_emissions = round(electricity_emissions / 1000, 2)
+#     diet_emissions = round(diet_emissions / 1000, 2)
+#     waste_emissions = round(waste_emissions / 1000, 2) 
+#     screentime_emission = round(screentime / 1000, 2)
+
+#     # Calculate total emissions
+#     total_emissions = round(
+#         transportation_emissions + electricity_emissions + diet_emissions + waste_emissions+screentime_emission, 2
+#     )
+#     print( {"transportation_emissions": transportation_emissions,
+#             "electricity_emissions": electricity_emissions,
+#             "diet_emissions": diet_emissions,
+#             "waste_emissions": waste_emissions,
+#             "screentime_emission": screentime_emission,
+#             "total_emissions": total_emissions})
+    
+
+#     return {
+#         "transportation_emissions": transportation_emissions,
+#         "electricity_emissions": electricity_emissions,
+#         "diet_emissions": diet_emissions,
+#         "waste_emissions": waste_emissions,
+#         "screentime_emission": screentime_emission,
+#         "total_emissions": total_emissions
+        
+#     }
+    

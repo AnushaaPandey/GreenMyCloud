@@ -1,0 +1,1241 @@
+// "splash": {
+    //   "image": "./assets/Images/splassh.png",
+    //   "resizeMode": "cover",
+    //   "backgroundColor": "#839788"
+    // },
+      return (
+    <SplashScreen />
+    // <ThemeProvider images={images}>
+      // <View style={styles.container}>
+      
+        // <AuthProvider>
+          // <Login />
+        // </AuthProvider>
+      // </View>
+    // </ThemeProvider>
+  );
+}
+// const images = [
+//   require("./assets/Images/icon.png"),
+//   require("./assets/Images/splash.png"),
+//   require("./assets/Images/login.png"),
+//   require("./assets/Images/register.png"),
+//   require("./assets/Images/forget.png"),
+// ];
+
+import { Button } from 'react-native'
+import Services from '../Shared/Services'
+// import { AuthContext } from '../Context/AuthContext'
+import WelcomeHeader from '../Components/WelcomeHeader'
+import SearchBar from '../Components/SearchBar'
+// import GlobalApi from '../Shared/GlobalApi'
+import Slider from '../Components/Slider'
+import { ScrollView } from 'react-native'
+
+
+// export default function Home() {
+//   return (
+//     <ScrollView style={{padding:20}}>
+//         <WelcomeHeader/>
+//         {/* <SearchBar/> */}
+//         <Slider/>
+//         {/* <View style={{height:100}}> 
+          
+//         </View> */}
+//     </ScrollView> 
+//   )
+// }
+
+// import { AppNavigator } from "./src/navigation/AppNavigator"
+// import { AuthProvider } from "./src/provider/AuthProvider";
+
+// import Login from "./src/screens/auth/Login";
+
+
+import {
+  Layout,
+  Text,
+  TextInput,
+  Button,
+  useTheme,
+  themeColor,
+} from "react-native-rapi-ui";
+import { style } from "deprecated-react-native-prop-types/DeprecatedImagePropType";
+
+LogBox.ignoreLogs([
+  "AsyncStorage has been extracted from react-native core and will be removed in a future release. It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. See https://github.com/react-native-async-storage/async-storage",
+]);
+
+
+// import React from "react";
+// import { StatusBar } from 'expo-status-bar';
+// import HomePage from "./src/screens/HomePage";
+// import { AuthProvider } from "./src/provider/AuthProvider";
+// import { AppNavigator } from "./src/navigation/AppNavigator"
+// import { ThemeProvider } from "react-native-rapi-ui";
+// import { LogBox } from "react-native";
+// import { AppRegistry } from 'react-native';
+// import App from './App'; 
+
+
+// import {
+//   Layout,
+//   Text,
+//   TextInput,
+//   Button,
+//   useTheme,
+//   themeColor,
+// } from "react-native-rapi-ui";
+// import Login from "./src/screens/auth/Login";
+
+// const images = [
+//   require("./assets/icon.png"),
+//   require("./assets/splash.png"),
+//   require("./assets/login.png"),
+//   require("./assets/register.png"),
+//   require("./assets/forget.png"),
+// ];
+// export default function App(props) {
+
+
+//   // Ignore firebase v9 AsyncStorage warning
+//   React.useEffect(() => {
+//     LogBox.ignoreLogs([
+//       "AsyncStorage has been extracted from react-native core and will be removed in a future release. It can now be installed and imported from '@react-native-async-storage/async-storage' instead of 'react-native'. See https://github.com/react-native-async-storage/async-storage",
+//     ]);
+//   }, []);
+
+//   return (
+//     <ThemeProvider images={images}>
+//     <View style={styles.container}></View>
+//       <AuthProvider>
+//         <HomePage />
+//         <Login />
+//       </AuthProvider>
+//     </ThemeProvider>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex:1,
+//     backgroundColor: '#F6F8FC',
+    
+//   },
+// });
+\
+Register Page:
+import React, { useState } from "react";
+import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image } from "react-native";
+import axios from 'axios';
+import { Layout, Text, TextInput, Button, useTheme, themeColor } from "react-native-rapi-ui";
+
+export default function ({ navigation }) {
+  const { isDarkmode, setTheme } = useTheme();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function register() {
+    setLoading(true);
+    try {
+      const response = await axios.post('http://localhost:8000/api-auth/register/', { email, password });
+      setLoading(false);
+      // Handle successful registration here
+    } catch (error) {
+      setLoading(false);
+      alert(error.message);
+    }
+  }
+
+  return (
+    <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
+      <Layout>
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: isDarkmode ? "#17171E" : themeColor.white100,
+            }}
+          >
+            <Image
+              resizeMode="contain"
+              style={{
+                height: 220,
+                width: 220,
+              }}
+              source={require("../../../assets/register.png")}
+            />
+          </View>
+          <View
+            style={{
+              flex: 3,
+              paddingHorizontal: 20,
+              paddingBottom: 20,
+              backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
+            }}
+          >
+            <Text
+              fontWeight="bold"
+              size="h3"
+              style={{
+                alignSelf: "center",
+                padding: 30,
+              }}
+            >
+              Register
+            </Text>
+            <Text>Email</Text>
+            <TextInput
+              containerStyle={{ marginTop: 15 }}
+              placeholder="Enter your email"
+              value={email}
+              autoCapitalize="none"
+              autoCompleteType="off"
+              autoCorrect={false}
+              keyboardType="email-address"
+              onChangeText={(text) => setEmail(text)}
+            />
+
+            <Text style={{ marginTop: 15 }}>Password</Text>
+            <TextInput
+              containerStyle={{ marginTop: 15 }}
+              placeholder="Enter your password"
+              value={password}
+              autoCapitalize="none"
+              autoCompleteType="off"
+              autoCorrect={false}
+              secureTextEntry={true}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <Button
+              text={loading ? "Loading" : "Create an account"}
+              onPress={() => {
+                register();
+              }}
+              style={{
+                marginTop: 20,
+              }}
+              disabled={loading}
+            />
+
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 15,
+                justifyContent: "center",
+              }}
+            >
+              <Text size="md">Already have an account?</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("Login");
+                }}
+              >
+                <Text
+                  size="md"
+                  fontWeight="bold"
+                  style={{
+                    marginLeft: 5,
+                  }}
+                >
+                  Login here
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 30,
+                justifyContent: "center",
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  isDarkmode ? setTheme("light") : setTheme("dark");
+                }}
+              >
+                <Text
+                  size="md"
+                  fontWeight="bold"
+                  style={{
+                    marginLeft: 5,
+                  }}
+                >
+                  {isDarkmode ? "☀️ light theme" : "🌑 dark theme"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </Layout>
+    </KeyboardAvoidingView>
+  );
+}
+Login Page:
+import React, { useState } from 'react';
+import { View, TextInput, Button, Alert, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import axios from 'axios';
+
+const LoginScreen = () => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/v1.0/my-login', {
+        username: username,
+        password: password
+      });
+      
+      // Handle successful login response
+      console.log('Login successful:', response.data);
+      // Navigate to the next screen or perform other actions
+    } catch (error) {
+      // Handle login error
+      console.error('Login error:', error.response.data);
+      // Display error message to the user
+      Alert.alert('Login failed', 'Invalid username or password');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+        <Image source={require('../../../assets/Images/login.png')} />
+        <Text style={styles.welcomeText}>Welcome to CodeBox</Text>
+        <Text style={{ textAlign: 'center', marginTop: 20, fontSize: 20 }}>Login</Text>
+        <TextInput
+            style={styles.input}
+            placeholder="Username"
+            value={username}
+            onChangeText={setUsername}
+        />
+        <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+        />
+        <Button
+            title="Login"
+            onPress={handleLogin}
+        />
+        <TouchableOpacity onPress={() => {
+            // Implement skip logic here
+        }}>
+            <Text style={{ textAlign: 'center', marginTop: 10 }}>Skip</Text>
+        </TouchableOpacity>
+    </View>
+)
+}
+
+const styles = StyleSheet.create({
+container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#fff',
+},
+welcomeText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+},
+input: {
+    width: '100%',
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+},
+});
+
+
+export default LoginScreen;
+
+
+
+
+// import React, { useState } from "react";
+// import {
+//   ScrollView,
+//   TouchableOpacity,
+//   View,
+//   KeyboardAvoidingView,
+//   Image,
+// } from "react-native";
+// import axios from 'axios'
+// // import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+// import {
+//   Layout,
+//   Text,
+//   TextInput,
+//   Button,
+//   useTheme,
+//   themeColor,
+// } from "react-native-rapi-ui";
+
+// export default function ({ navigation }) {
+//   const { isDarkmode, setTheme } = useTheme();
+//   // const auth = getAuth();
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [loading, setLoading] = useState(false);
+
+//   async function login() {
+//     setLoading(true);
+//     try {
+//       const response = await axios.post(`${authEndpoint}login/`, { email, password });
+//       setLoading(false);
+//       // Handle successful login here
+//     } catch (error) {
+//       setLoading(false);
+//       alert(error);
+//     }
+//   }
+
+//   // async function login() {
+//   //   setLoading(true);
+//   //   await signInWithEmailAndPassword(auth, email, password).catch(function (
+//   //     error
+//   //   ) {
+//   //     // Handle Errors here.
+//   //     var errorCode = error.code;
+//   //     var errorMessage = error.message;
+//   //     // ...
+//   //     setLoading(false);
+//   //     alert(errorMessage);
+//   //   });
+//   // }
+
+//   return (
+//     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
+//       <Layout>
+//         <ScrollView
+//           contentContainerStyle={{
+//             flexGrow: 1,
+//           }}
+//         >
+//           <View
+//             style={{
+//               flex: 1,
+//               justifyContent: "center",
+//               alignItems: "center",
+//               backgroundColor: isDarkmode ? "#17171E" : themeColor.white100,
+//             }}
+//           >
+//             <Image
+//               resizeMode="contain"
+//               style={{
+//                 height: 220,
+//                 width: 220,
+//               }}
+//               source={require("../../../assets/login.png")}
+//             />
+//           </View>
+//           <View
+//             style={{
+//               flex: 3,
+//               paddingHorizontal: 20,
+//               paddingBottom: 20,
+//               backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
+//             }}
+//           >
+//             <Text
+//               fontWeight="bold"
+//               style={{
+//                 alignSelf: "center",
+//                 padding: 30,
+//               }}
+//               size="h3"
+//             >
+//               Login
+//             </Text>
+//             <Text>Email</Text>
+//             <TextInput
+//               containerStyle={{ marginTop: 15 }}
+//               placeholder="Enter your email"
+//               value={email}
+//               autoCapitalize="none"
+//               autoCompleteType="off"
+//               autoCorrect={false}
+//               keyboardType="email-address"
+//               onChangeText={(text) => setEmail(text)}
+//             />
+
+//             <Text style={{ marginTop: 15 }}>Password</Text>
+//             <TextInput
+//               containerStyle={{ marginTop: 15 }}
+//               placeholder="Enter your password"
+//               value={password}
+//               autoCapitalize="none"
+//               autoCompleteType="off"
+//               autoCorrect={false}
+//               secureTextEntry={true}
+//               onChangeText={(text) => setPassword(text)}
+//             />
+//             <Button
+//               text={loading ? "Loading" : "Continue"}
+//               onPress={() => {
+//                 login();
+//               }}
+//               style={{
+//                 marginTop: 20,
+//               }}
+//               disabled={loading}
+//             />
+
+//             <View
+//               style={{
+//                 flexDirection: "row",
+//                 alignItems: "center",
+//                 marginTop: 15,
+//                 justifyContent: "center",
+//               }}
+//             >
+//               <Text size="md">Don't have an account?</Text>
+//               <TouchableOpacity
+//                 onPress={() => {
+//                   navigation.navigate("Register");
+//                 }}
+//               >
+//                 <Text
+//                   size="md"
+//                   fontWeight="bold"
+//                   style={{
+//                     marginLeft: 5,
+//                   }}
+//                 >
+//                   Register here
+//                 </Text>
+//               </TouchableOpacity>
+//             </View>
+//             <View
+//               style={{
+//                 flexDirection: "row",
+//                 alignItems: "center",
+//                 marginTop: 10,
+//                 justifyContent: "center",
+//               }}
+//             >
+//               <TouchableOpacity
+//                 onPress={() => {
+//                   navigation.navigate("ForgetPassword");
+//                 }}
+//               >
+//                 <Text size="md" fontWeight="bold">
+//                   Forget password
+//                 </Text>
+//               </TouchableOpacity>
+//             </View>
+//             <View
+//               style={{
+//                 flexDirection: "row",
+//                 alignItems: "center",
+//                 marginTop: 30,
+//                 justifyContent: "center",
+//               }}
+//             >
+//               <TouchableOpacity
+//                 onPress={() => {
+//                   isDarkmode ? setTheme("light") : setTheme("dark");
+//                 }}
+//               >
+//                 <Text
+//                   size="md"
+//                   fontWeight="bold"
+//                   style={{
+//                     marginLeft: 5,
+//                   }}
+//                 >
+//                   {isDarkmode ? "☀️ light theme" : "🌑 dark theme"}
+//                 </Text>
+//               </TouchableOpacity>
+//             </View>
+//           </View>
+//         </ScrollView>
+//       </Layout>
+//     </KeyboardAvoidingView>
+//   );
+// }\
+ForgetPassword:
+import React, { useState } from "react";
+import {
+  ScrollView,
+  TouchableOpacity,
+  View,
+  KeyboardAvoidingView,
+  Image,
+} from "react-native";
+import axios from 'axios'
+// import { getAuth, sendPasswordResetEmail } from "firebase/auth";
+import {
+  Layout,
+  Text,
+  TextInput,
+  Button,
+  useTheme,
+  themeColor,
+} from "react-native-rapi-ui";
+
+export default function ({ navigation }) {
+  const { isDarkmode, setTheme } = useTheme();
+  // const auth = getAuth();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  async function forget() {
+    setLoading(true);
+      try {
+        const response = await axios.post('http://localhost:8000/api/password-reset/', { email });
+        setLoading(false);
+        navigation.navigate("Login");
+        alert("Your password reset has been sent to your email");
+      } catch (error) {
+        setLoading(false);
+        alert(error);
+      }
+    }
+  render ();{
+    return (
+      <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
+        <Layout>
+          <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: isDarkmode ? "#17171E" : themeColor.white100,
+              }}
+            >
+              <Image
+                resizeMode="contain"
+                style={{
+                  height: 220,
+                  width: 220,
+                }}
+                source={require("../../../assets/forget.png")}
+              />
+            </View>
+            <View
+              style={{
+                flex: 3,
+                paddingHorizontal: 20,
+                paddingBottom: 20,
+                backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
+              }}
+            >
+              <Text
+                size="h3"
+                fontWeight="bold"
+                style={{
+                  alignSelf: "center",
+                  padding: 30,
+                }}
+              >
+                Forget Password
+              </Text>
+              <Text>Email</Text>
+              <TextInput
+                containerStyle={{ marginTop: 15 }}
+                placeholder="Enter your email"
+                value={email}
+                autoCapitalize="none"
+                autoCompleteType="off"
+                autoCorrect={false}
+                keyboardType="email-address"
+                onChangeText={(text) => setEmail(text)}
+              />
+              <Button
+                text={loading ? "Loading" : "Send email"}
+                onPress={() => {
+                  forget();
+                }}
+                style={{
+                  marginTop: 20,
+                }}
+                disabled={loading}
+              />
+
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 15,
+                  justifyContent: "center",
+                }}
+              >
+                <Text size="md">Already have an account?</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("Login");
+                  }}
+                >
+                  <Text
+                    size="md"
+                    fontWeight="bold"
+                    style={{
+                      marginLeft: 5,
+                    }}
+                  >
+                    Login here
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginTop: 30,
+                  justifyContent: "center",
+                }}
+              >
+                <TouchableOpacity
+                  onPress={() => {
+                    isDarkmode ? setTheme("light") : setTheme("dark");
+                  }}
+                >
+                  <Text
+                    size="md"
+                    fontWeight="bold"
+                    style={{
+                      marginLeft: 5,
+                    }}
+                  >
+                    {isDarkmode ? "☀️ light theme" : "🌑 dark theme"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ScrollView>
+        </Layout>
+      </KeyboardAvoidingView>
+    );
+  }
+}
+Dashboard Page:
+import React from 'react';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import axios from "axios";
+
+
+  // Dummy news data
+  const newsData = [
+    { id: 1, title: 'News 1', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.' },
+    { id: 2, title: 'News 2', content: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.' },
+    { id: 3, title: 'News 3', content: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' },
+   
+  ];
+  const Dashboard = () => {
+    const [data, setData] = useState(null);
+  
+    useEffect(() => {
+      fetchData();
+    }, []);
+    if (!data) {
+      return <Text>Loading...</Text>;
+    }
+    else {
+      console.error(error);
+    }
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/data/");
+      setData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Dashboard</Text>
+      </View>
+
+      {/* Main content */}
+      <ScrollView style={styles.content}>
+        {/* Dummy news list */}
+        {newsData.map((news) => (
+          <View key={news.id} style={styles.newsItem}>
+            <Text style={styles.newsTitle}>{news.title}</Text>
+            <Text style={styles.newsContent}>{news.content}</Text>
+          </View>
+        ))}
+      </ScrollView>
+
+      {/* Footer navbar */}
+      <View style={styles.footer}>
+        {/* Add navbar buttons here */}
+        <Text style={styles.navbarButton}>Home</Text>
+        <Text style={styles.navbarButton}>Calculate Emissions</Text>
+        <Text style={styles.navbarButton}>Settings</Text>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    backgroundColor: '#007bff',
+    padding: 20,
+  },
+  headerText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+  },
+  newsItem: {
+    marginBottom: 20,
+  },
+  newsTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  newsContent: {
+    fontSize: 16,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+  },
+  navbarButton: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
+
+export default Dashboard;
+
+AppNavigator Page:
+import React, { useContext } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { AuthContext } from "../provider/AuthProvider";
+
+// Main
+import HomePage from "../screens/HomePage";
+import Dashboard from "../screens/Dashboard";
+
+// Auth screens
+import Login from "../screens/auth/Login";
+import Register from "../screens/auth/Register";
+import ForgetPassword from "../screens/auth/ForgotPassword";
+
+import Loading from "../screens/utils/loading";
+
+// Replace this with your Django API endpoint for user authentication
+const authEndpoint = "http://localhost:8000/api-auth/";
+
+const AuthStack = createStackNavigator();
+
+const Auth = () => {
+  return (
+    <AuthStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <AuthStack.Screen name="Login" component={DjangoLogin} />
+      <AuthStack.Screen name="Register" component={DjangoRegister} />
+      <AuthStack.Screen name="ForgetPassword" component={DjangoForgetPassword} />
+    </AuthStack.Navigator>
+  );
+};
+
+const MainStack = createStackNavigator();
+
+const Main = () => {
+  return (
+    <MainStack.Navigator
+      screenOptions={{
+        headerShown: false, 
+      }}
+    >
+      <MainStack.Screen name="Home" component={HomePage}  />
+      <MainStack.Screen name="Dashboard" component={Dashboard} />
+    </MainStack.Navigator>
+  );
+};
+
+export default () => {
+  const auth = useContext(AuthContext);
+  const user = auth.user;
+  
+  return (
+    <NavigationContainer>
+      {user == null && <Loading />}
+      {user == false && <Auth />}
+      {user && <Main />}
+    </NavigationContainer>
+  );
+};
+
+
+
+import React, { useState } from 'react';
+import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image } from 'react-native';
+import { Layout, Text, TextInput, Button, useTheme, themeColor } from 'react-native-rapi-ui';
+import { NavigationContainer } from '@react-navigation/native'; // Import NavigationContainer
+import { useNavigation } from "@react-navigation/native";
+
+export default function LoginScreen({navigation}) {
+  const { isDarkmode, setTheme } = useTheme();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  // const navigation = useNavigation();
+
+  const handleLogin = () => {
+    // Simulate login by validating fields
+    if (!username || !password) {
+      alert('Please enter username and password');
+      return;
+    }
+ 
+    // Simulate successful login
+    console.log('Login successful');
+    // For simplicity, navigate to the home page after login
+    navigation.navigate('Dashboard');
+  };
+
+  return (
+    <NavigationContainer> {/* Wrap your component with NavigationContainer */}
+      <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
+        <Layout>
+          <ScrollView
+            contentContainerStyle={{
+              flexGrow: 1,
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: isDarkmode ? '#17171E' : themeColor.white100,
+              }}
+            >
+              <Image
+                resizeMode="contain"
+                style={{
+                  height: 220,
+                  width: 220,
+                }}
+                source={require('../../../assets/Images/login.png')}
+              />
+            </View>
+            <View
+              style={{
+                flex: 3,
+                paddingHorizontal: 20,
+                paddingBottom: 20,
+                backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
+              }}
+            >
+              <Text
+                fontWeight="bold"
+                style={{
+                  alignSelf: 'center',
+                  padding: 30,
+                }}
+                size="h3"
+              >
+                Login
+              </Text>
+              <Text>Username</Text>
+              <TextInput
+                containerStyle={{ marginTop: 15 }}
+                placeholder="Enter your username"
+                value={username}
+                onChangeText={setUsername}
+              />
+              <Text>Password</Text>
+              <TextInput
+                containerStyle={{ marginTop: 15 }}
+                placeholder="Enter your password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+              <Button
+                title="Login"
+                onPress={handleLogin}
+                style={{
+                  marginTop: 20,
+                }}
+              />
+              <TouchableOpacity
+                onPress={() => {
+                  // Navigate to the forgot password page
+                  navigation.navigate('ForgotPassword');
+                }}
+              >
+                <Text style={{ textAlign: 'center', marginTop: 10 }}>Forgot Password?</Text>
+              </TouchableOpacity>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginTop: 15,
+                  justifyContent: 'center',
+                }}
+              >
+                <Text size="md">Don't have an account?</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    // Navigate to the register page
+                    navigation.navigate('Register');
+                  }}
+                >
+                  <Text
+                    size="md"
+                    fontWeight="bold"
+                    style={{
+                      marginLeft: 5,
+                    }}
+                  >
+                    Register here
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ScrollView>
+        </Layout>
+      </KeyboardAvoidingView>
+    </NavigationContainer>
+  );
+}
+
+Register Page2:
+import React, { useState,useContext } from "react";
+import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image } from "react-native";
+import { Layout, Text, TextInput, Button, useTheme, themeColor } from "react-native-rapi-ui";
+import { AuthContext } from "../../Context/AuthContext";
+
+
+
+
+export default function RegisterScreen({navigation}) {
+  const { isDarkmode, setTheme } = useTheme();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const val = useContext(AuthContext);
+  // const navigation = useNavigation();
+
+  const register = () => {
+    // Validation checks
+    if (!email || !name || !lastName || !username || !password || !confirmPassword) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    // Simulate registration by storing email and password locally
+    // In a real application, you would make an API call to register the user
+    // and handle success/error accordingly.
+    console.log("Registering...");
+    console.log("Email:", email);
+    console.log("Name:", name);
+    console.log("Last Name:", lastName);
+    console.log("Username:", username);
+    console.log("Password:", password);
+
+    // For simplicity, navigate to login screen after registration
+    // navigation.navigate("Login");
+  };
+
+  return (
+    // <NavigationContainer> {/* Wrap your component with NavigationContainer */}
+    <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
+      <Layout>
+        <ScrollView
+          contentContainerStyle={{
+            flexGrow: 1,
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: isDarkmode ? "#17171E" : themeColor.white100,
+            }}
+          >
+            <Image
+              resizeMode="contain"
+              style={{
+                height: 220,
+                width: 220,
+              }}
+              source={require("../../../assets/Images/register.png")}
+            />
+          </View>
+          <View
+            style={{
+              flex: 3,
+              paddingHorizontal: 20,
+              paddingBottom: 20,
+              backgroundColor: isDarkmode ? themeColor.dark : themeColor.white,
+            }}
+          >
+            <Text
+              fontWeight="bold"
+              size="h3"
+              style={{
+                alignSelf: "center",
+                padding: 30,
+              }}
+            >
+              Register
+            </Text>
+            <Text>{val}</Text>
+            <Text>Email</Text>
+            <TextInput
+              containerStyle={{ marginTop: 10 }}
+              placeholder="Enter your email"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+            />
+            <Text>Name</Text>
+            <TextInput
+              containerStyle={{ marginTop: 10 }}
+              placeholder="Enter your name"
+              value={name}
+              onChangeText={(text) => setName(text)}
+            />
+            <Text>Last Name</Text>
+            <TextInput
+              containerStyle={{ marginTop: 10 }}
+              placeholder="Enter your last name"
+              value={lastName}
+              onChangeText={(text) => setLastName(text)}
+            />
+            <Text>Username</Text>
+            <TextInput
+              containerStyle={{ marginTop: 10 }}
+              placeholder="Enter your username"
+              value={username}
+              onChangeText={(text) => setUsername(text)}
+            />
+            <Text>Password</Text>
+            <TextInput
+              containerStyle={{ marginTop: 10 }}
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              secureTextEntry
+            />
+            <Text>Confirm Password</Text>
+            <TextInput
+              containerStyle={{ marginTop: 10 }}
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              onChangeText={(text) => setConfirmPassword(text)}
+              secureTextEntry
+            />
+            <Button
+              text={loading ? "Loading" : "Create an account"}
+              onPress={() => {
+                  navigation.navigate('Login');
+                  register();
+              }}
+              style={{
+                marginTop: 20,
+              }}
+              disabled={loading}
+            />
+
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 15,
+                justifyContent: "center",
+              }}
+            >
+              <Text size="md">Already have an account?</Text>
+              <TouchableOpacity  onPress={() => {
+                  navigation.navigate('Login');
+                }}
+              >
+                <Text
+                  size="md"
+                  fontWeight="bold"
+                  style={{
+                    marginLeft: 5,
+                  }}
+                >
+                  Login here
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 30,
+                justifyContent: "center",
+              }}
+            >
+              <TouchableOpacity
+                onPress={() => {
+                  isDarkmode ? setTheme("light") : setTheme("dark");
+                }}
+              >
+                <Text
+                  size="md"
+                  fontWeight="bold"
+                  style={{
+                    marginLeft: 5,
+                  }}
+                >
+                  {isDarkmode ? "☀️ light theme" : "🌑 dark theme"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+      </Layout>
+    </KeyboardAvoidingView>
+    // {/* </NavigationContainer> */}
+  );
+}
+
+
