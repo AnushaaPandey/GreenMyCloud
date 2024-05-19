@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import datetime
+from datetime import timedelta
+import os
 
 # import rest_framework 
 
@@ -30,7 +32,7 @@ DEBUG = True
 
 CORS_ALLOW_ALL_ORIGINS = True
 
-
+AUTH_USER_MODEL = 'CarbonFootprint.User'
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,19 +44,23 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'CarbonFootprint',
     'rest_framework',
+    'rest_framework_simplejwt',
     'corsheaders',
-    # 'settingsapp',
+    # 'accounts',
+    # 'articles',
+    
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
+
 ]
 
 ROOT_URLCONF = 'greencloud.urls'
@@ -88,7 +94,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'greencloud',
         'USER': 'root',
-        'PASSWORD': 'mysql98anusha$',
+        'PASSWORD': '',
         'HOST': '127.0.0.1',  # Or your database host
         'PORT': '3306',    
         'OPTIONS': {
@@ -155,6 +161,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
+    'DEFAULT_RENDER_CLASSES':(
+        'rest_framework.renders.JSONRenderer',
+                              )
 }
 
 JWT_AUTH = {
@@ -162,4 +171,29 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=3),
     # allow refreshing of tokens
     'JWT_ALLOW_REFRESH': True,
+# }
+
+# SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=20),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'USER_AUTHENTICATION_RULE': 'rest_framework_simplejwt.authentication.default_user_authentication_rule',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    'TOKEN_USER_CLASS': 'rest_framework_simplejwt.models.TokenUser',
+
+    'JTI_CLAIM': 'jti',
+
 }
+
+PASSWORD_RESET_TIMEOUT=900          # 900 Sec = 15 Min
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]

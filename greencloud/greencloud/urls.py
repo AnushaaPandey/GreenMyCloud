@@ -23,12 +23,12 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+                    
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('CarbonFootprint/', include('CarbonFootprint.urls')),
-    # path("", include(('CarbonFootprint.urls', "CarbonFootprint"), "CarbonFootprint")),
-    path('api-auth/', include('rest_framework.urls')),
-    path('api/v1.0/user', include('CarbonFootprint.urls')),
+    path('', include('CarbonFootprint.urls')),
+    # path('registration', include(('accounts.urls'))),
+  
 ]
     # path('api/v1.0/app', include('settingsapp.urls')),
     # path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
