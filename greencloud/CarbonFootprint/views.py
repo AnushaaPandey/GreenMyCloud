@@ -1,52 +1,127 @@
+import uuid
 from django.shortcuts import render, redirect 
-from django.contrib.auth.forms import UserCreationForm
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate, login, logout
-from .forms import LoginForm, CreateUserForm
-from .factors1 import calculate_emissions
-from .models import User, UserData, AdminDatabase, EmissionData, Register, Result 
+# from .forms import LoginForm, CreateUserForm
+from .factors1 import calculate_emissions, estimate_emission
+from .models import EmissionData, Result 
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+from .serializers import SendPasswordResetEmailSerializer, UserChangePasswordSerializer, UserLoginSerializer, UserPasswordResetSerializer, UserProfileSerializer, UserRegistrationSerializer
+from django.contrib.auth import authenticate
+from .renderers import UserRenderer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+
+# Generate Token Manually
+def get_tokens_for_user(user):
+  refresh = RefreshToken.for_user(user)
+  return {
+      'refresh': str(refresh),
+      'access': str(refresh.access_token),
+  }
+
+class UserRegistrationView(APIView):
+  renderer_classes = [UserRenderer]
+  def post(self, request, format=None):
+    serializer = UserRegistrationSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = serializer.save()
+    token = get_tokens_for_user(user)
+    return Response({'token':token, 'msg':'Registration Successful'}, status=status.HTTP_201_CREATED)
+
+class UserLoginView(APIView):
+  renderer_classes = [UserRenderer]
+  def post(self, request, format=None):
+    serializer = UserLoginSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    username = serializer.data.get('username')
+    password = serializer.data.get('password')
+    user = authenticate(username=username, password=password)
+    if user is not None:
+      token = get_tokens_for_user(user)
+      return Response({'token':token, 'msg':'Login Success'}, status=status.HTTP_200_OK)
+    else:
+      return Response({'errors':{'non_field_errors':['Username or Password is not Valid']}}, status=status.HTTP_404_NOT_FOUND)
+
+class UserProfileView(APIView):
+  renderer_classes = [UserRenderer]
+  permission_classes = [IsAuthenticated]
+  def get(self, request, format=None):
+    serializer = UserProfileSerializer(request.user)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UserChangePasswordView(APIView):
+  renderer_classes = [UserRenderer]
+  permission_classes = [IsAuthenticated]
+  def post(self, request, format=None):
+    serializer = UserChangePasswordSerializer(data=request.data, context={'user':request.user})
+    serializer.is_valid(raise_exception=True)
+    return Response({'msg':'Password Changed Successfully'}, status=status.HTTP_200_OK)
+
+class SendPasswordResetEmailView(APIView):
+  renderer_classes = [UserRenderer]
+  def post(self, request, format=None):
+    serializer = SendPasswordResetEmailSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    return Response({'msg':'Password Reset link send. Please check your Email'}, status=status.HTTP_200_OK)
+
+class UserPasswordResetView(APIView):
+  renderer_classes = [UserRenderer]
+  def post(self, request, uid, token, format=None):
+    serializer = UserPasswordResetSerializer(data=request.data, context={'uid':uid, 'token':token})
+    serializer.is_valid(raise_exception=True)
+    return Response({'msg':'Password Reset Successfully'}, status=status.HTTP_200_OK)
 
 def homepage(request):
     return render(request, 'registration/index.html')
 
-def register(request):
-    form = CreateUserForm()
+# def register(request):
+#     form = CreateUserForm()
+#     if request.method == "POST":
+#         form = CreateUserForm(request.POST)
+#         if form.is_valid():
+#             form.save() 
+#             return redirect("my-login")
+#         else:
+#             return HttpResponse("<h1> Registration Error!</h1>")
 
-    if request.method == "POST":
-        form = CreateUserForm(request.POST)
-        if form.is_valid():
-            form.save() 
-            return redirect("my-login")
+#     context = {'form': form}
+#     return render(request, 'registration/register.html', context=context)
 
-    context = {'form': form}
-    return render(request, 'registration/register.html', context=context)
+# def my_login(request):
+#     form = LoginForm()
 
-def my_login(request):
-    form = LoginForm()
+#     if request.method == 'POST':
+#         form = LoginForm(request, data=request.POST)
+#         if form.is_valid():
+#             username = request.POST.get('username')
+#             password = request.POST.get('password')
+#             user = authenticate(request, username=username, password=password)
+#             if user is not None:
+#                 if user.is_active:
+#                     auth.login(request, user)
+#                     return redirect("dashboard")
+#                 else:
+#                     return HttpResponse("<h1> Invalid Login! </h1>")
+#             else:
+#                 messages.info(request, 'Username or Password is incorrect. ')
 
-    if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
-        if form.is_valid():
-            username = request.POST.get('username')
-            password = request.POST.get('password')
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                auth.login(request, user)
-                return redirect("dashboard")
-            else:
-                messages.info(request, 'Username or Password is incorrect. ')
+#     context = {'form': form}
+#     return render(request, 'registration/my-login.html', context=context)
 
-    context = {'form': form}
-    return render(request, 'registration/my-login.html', context=context)
 
-def user_logout(request):
-    auth.logout(request)
-    return redirect("")
 
-@login_required(login_url="my_login")
+@login_required(login_url="login")
+# def user_logout(request):
+#         auth.logout(request)
+#         return redirect(request, 'my-login.html')
 def dashboard(request):
     return render(request, 'registration/dashboard.html')
 
@@ -127,23 +202,23 @@ def data(request):
 
 
 
-# Models Import:
-def user(request):
-    users = User.objects.all()
-    return render(request, 'user.html', {'users': users})
+# # Models Import:
+# def user(request):
+#     users = User.objects.all()
+#     return render(request, 'user.html', {'users': users})
 
-def userdata(request):
-    usersdata = UserData.objects.all()
-    return render(request, 'user.html', {'usersdata': usersdata})
+# def userdata(request):
+#     usersdata = UserData.objects.all()
+#     return render(request, 'user.html', {'usersdata': usersdata})
 
-def results(request):
-    res = Result.objects.all()
-    return render(request, 'user.html', {'res': res})
+# def results(request):
+#     res = Result.objects.all()
+#     return render(request, 'user.html', {'res': res})
 
 
-def admin_database(request):
-    admin_databases = AdminDatabase.objects.all()
-    return render(request, 'admin_database.html', {'admin_databases': admin_databases})
+# def admin_database(request):
+#     admin_databases = AdminDatabase.objects.all()
+#     return render(request, 'admin_database.html', {'admin_databases': admin_databases})
 
 
 
