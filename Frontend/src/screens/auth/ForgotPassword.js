@@ -1,42 +1,33 @@
-import React, { useState } from "react";
-import {
-  ScrollView,
-  TouchableOpacity,
-  View,
-  KeyboardAvoidingView,
-  Image,
-} from "react-native";
-import axios from 'axios'
-// import { getAuth, sendPasswordResetEmail } from "firebase/auth";
-import {
-  Layout,
-  Text,
-  TextInput,
-  Button,
-  useTheme,
-  themeColor,
-} from "react-native-rapi-ui";
+import React, { useState } from 'react';
+import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image } from 'react-native';
+// import axios from 'axios';
+import { Layout, Text, TextInput, Button, useTheme, themeColor } from 'react-native-rapi-ui';
 
-export default function ({ navigation }) {
+// import { useNavigation } from "@react-navigation/native";
+// import { AuthContext } from "./src/provider/AuthProvider";
+
+export default function ForgotPasswordScreen({navigation}) {
   const { isDarkmode, setTheme } = useTheme();
-  const auth = getAuth();
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-
-  async function forget() {
+  // const navigation = useNavigation();
+ 
+  const forget = async () => {
     setLoading(true);
-      try {
-        const response = await axios.post('http://localhost:8000/api/password-reset/', { email });
-        setLoading(false);
-        navigation.navigate("Login");
-        alert("Your password reset has been sent to your email");
-      } catch (error) {
-        setLoading(false);
-        alert(error);
-      }
+    try {
+      // Simulate sending password reset email
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate async call
+      setLoading(false);
+      navigation.navigate('Login');
+      alert('Your password reset link has been sent to your email');
+    } catch (error) {
+      setLoading(false);
+      alert(error.message);
     }
-  render ();{
-    return (
+  };
+
+  return (
+    // <NavigationContainer> {/* Wrap your component with NavigationContainer */}
       <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
         <Layout>
           <ScrollView
@@ -47,9 +38,9 @@ export default function ({ navigation }) {
             <View
               style={{
                 flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: isDarkmode ? "#17171E" : themeColor.white100,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: isDarkmode ? '#17171E' : themeColor.white100,
               }}
             >
               <Image
@@ -58,7 +49,7 @@ export default function ({ navigation }) {
                   height: 220,
                   width: 220,
                 }}
-                source={require("../../../assets/forget.png")}
+                source={require('../../../assets/Images/forget.png')}
               />
             </View>
             <View
@@ -73,11 +64,11 @@ export default function ({ navigation }) {
                 size="h3"
                 fontWeight="bold"
                 style={{
-                  alignSelf: "center",
+                  alignSelf: 'center',
                   padding: 30,
                 }}
               >
-                Forget Password
+                Forgot Password
               </Text>
               <Text>Email</Text>
               <TextInput
@@ -91,28 +82,25 @@ export default function ({ navigation }) {
                 onChangeText={(text) => setEmail(text)}
               />
               <Button
-                text={loading ? "Loading" : "Send email"}
-                onPress={() => {
-                  forget();
-                }}
+                text={loading ? 'Loading' : 'Send email'}
+                onPress={forget}
                 style={{
                   marginTop: 20,
                 }}
                 disabled={loading}
               />
-
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
+                  flexDirection: 'row',
+                  alignItems: 'center',
                   marginTop: 15,
-                  justifyContent: "center",
+                  justifyContent: 'center',
                 }}
               >
-                <Text size="md">Already have an account?</Text>
+                <Text size="md">Remembered your password?</Text>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate("Login");
+                    navigation.navigate('Login');
                   }}
                 >
                   <Text
@@ -128,15 +116,15 @@ export default function ({ navigation }) {
               </View>
               <View
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
+                  flexDirection: 'row',
+                  alignItems: 'center',
                   marginTop: 30,
-                  justifyContent: "center",
+                  justifyContent: 'center',
                 }}
               >
                 <TouchableOpacity
                   onPress={() => {
-                    isDarkmode ? setTheme("light") : setTheme("dark");
+                    isDarkmode ? setTheme('light') : setTheme('dark');
                   }}
                 >
                   <Text
@@ -146,7 +134,7 @@ export default function ({ navigation }) {
                       marginLeft: 5,
                     }}
                   >
-                    {isDarkmode ? "☀️ light theme" : "🌑 dark theme"}
+                    {isDarkmode ? '☀️ light theme' : '🌑 dark theme'}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -154,6 +142,6 @@ export default function ({ navigation }) {
           </ScrollView>
         </Layout>
       </KeyboardAvoidingView>
-    );
-  }
+    // </NavigationContainer>
+  );
 }

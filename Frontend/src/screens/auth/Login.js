@@ -1,69 +1,62 @@
-import React, { useState } from "react";
-import {
-  ScrollView,
-  TouchableOpacity,
-  View,
-  KeyboardAvoidingView,
-  Image,
-} from "react-native";
-import axios from 'axios'
-// import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import {
-  Layout,
-  Text,
-  TextInput,
-  Button,
-  useTheme,
-  themeColor,
-} from "react-native-rapi-ui";
+import React, { useContext, useState } from 'react';
+import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image } from 'react-native';
+import { Layout, Text, TextInput, Button, useTheme, themeColor } from 'react-native-rapi-ui';
+// import { useNavigation } from "@react-navigation/native";
+import { AuthContext } from "../../Context/AuthContext";
+import axios from 'axios';
 
-export default function ({ navigation }) {
+export default function LoginScreen({navigation}) {
   const { isDarkmode, setTheme } = useTheme();
-  const auth = getAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const val = useContext(AuthContext);
+  // const navigation = useNavigation();
 
-  async function login() {
-    setLoading(true);
-    try {
-      const response = await axios.post('http://localhost:8000/api/login/', { email, password });
-      setLoading(false);
-      // Handle successful login here
-    } catch (error) {
-      setLoading(false);
-      alert(error);
-    }
-  }
+  const LoginScreen = () => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+  
+    const handleLogin = async () => {
+      try {
+        const response = await axios.post('http://localhost:8000/login/', {
+          username: username,
+          password: password
+        });
+        
+        // Handle successful login response
+        console.log('Login successful:', response.data);
+        // Navigate to the next screen or perform other actions
+      } catch (error) {
+        // Handle login error
+        console.error('Login error:', error.response.data);
+        // Display error message to the user
+        Alert.alert('Login failed', 'Invalid username or password');
+      }
+    };
 
-  // async function login() {
-  //   setLoading(true);
-  //   await signInWithEmailAndPassword(auth, email, password).catch(function (
-  //     error
-  //   ) {
-  //     // Handle Errors here.
-  //     var errorCode = error.code;
-  //     var errorMessage = error.message;
-  //     // ...
-  //     setLoading(false);
-  //     alert(errorMessage);
-  //   });
-  // }
+  // const handleLogin = () => {
+  //   // Simulate login by validating fields
+  //   if (!username || !password) {
+  //     alert('Please enter username and password');
+  //     return;
+  //   }
+ 
+    // Simulate successful login
+    console.log('Login successful');
+    // For simplicity, navigate to the home page after login
+    navigation.navigate('Dashboard');
+  };
 
   return (
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
       <Layout>
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-          }}
-        >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View
             style={{
               flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: isDarkmode ? "#17171E" : themeColor.white100,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: isDarkmode ? '#17171E' : themeColor.white100,
             }}
           >
             <Image
@@ -72,7 +65,7 @@ export default function ({ navigation }) {
                 height: 220,
                 width: 220,
               }}
-              source={require("../../../assets/login.png")}
+              source={require('../../../assets/Images/login.png')}
             />
           </View>
           <View
@@ -85,112 +78,64 @@ export default function ({ navigation }) {
           >
             <Text
               fontWeight="bold"
-              style={{
-                alignSelf: "center",
-                padding: 30,
-              }}
+              style={{ alignSelf: 'center', padding: 30 }}
               size="h3"
             >
               Login
             </Text>
-            <Text>Email</Text>
+            <Text>{val}</Text>
+            <Text>Username</Text>
             <TextInput
               containerStyle={{ marginTop: 15 }}
-              placeholder="Enter your email"
-              value={email}
-              autoCapitalize="none"
-              autoCompleteType="off"
-              autoCorrect={false}
-              keyboardType="email-address"
-              onChangeText={(text) => setEmail(text)}
+              placeholder="Enter your username"
+              value={username}
+              onChangeText={setUsername}
             />
-
-            <Text style={{ marginTop: 15 }}>Password</Text>
+            <Text>Password</Text>
             <TextInput
               containerStyle={{ marginTop: 15 }}
               placeholder="Enter your password"
               value={password}
-              autoCapitalize="none"
-              autoCompleteType="off"
-              autoCorrect={false}
-              secureTextEntry={true}
-              onChangeText={(text) => setPassword(text)}
+              onChangeText={setPassword}
+              secureTextEntry
             />
             <Button
-              text={loading ? "Loading" : "Continue"}
-              onPress={() => {
-                login();
-              }}
-              style={{
-                marginTop: 20,
-              }}
-              disabled={loading}
+              title="Login"
+              onPress={(handleLogin) => {  navigation.navigate('Dashboard');
+             
+              }
+            }
+              style={{ marginTop: 20 }}
             />
-
+            <TouchableOpacity
+              onPress={() => {
+                // Navigate to the forgot password page
+                navigation.navigate('ForgotPassword');
+              }}
+            >
+              <Text style={{ textAlign: 'center', marginTop: 10 }}>Forgot Password?</Text>
+            </TouchableOpacity>
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 marginTop: 15,
-                justifyContent: "center",
+                justifyContent: 'center',
               }}
             >
               <Text size="md">Don't have an account?</Text>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate("Register");
+                  // Navigate to the register page
+                  navigation.navigate('Register');
                 }}
               >
                 <Text
                   size="md"
                   fontWeight="bold"
-                  style={{
-                    marginLeft: 5,
-                  }}
+                  style={{ marginLeft: 5 }}
                 >
                   Register here
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 10,
-                justifyContent: "center",
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate("ForgetPassword");
-                }}
-              >
-                <Text size="md" fontWeight="bold">
-                  Forget password
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 30,
-                justifyContent: "center",
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  isDarkmode ? setTheme("light") : setTheme("dark");
-                }}
-              >
-                <Text
-                  size="md"
-                  fontWeight="bold"
-                  style={{
-                    marginLeft: 5,
-                  }}
-                >
-                  {isDarkmode ? "☀️ light theme" : "🌑 dark theme"}
                 </Text>
               </TouchableOpacity>
             </View>
