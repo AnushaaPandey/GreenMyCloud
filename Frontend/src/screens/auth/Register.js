@@ -62,8 +62,8 @@ export default function RegisterScreen({navigation}) {
             <Image
               resizeMode="contain"
               style={{
-                height: 220,
-                width: 220,
+                height: 225,
+                width: 225,
               }}
               source={require("../../../assets/Images/register.png")}
             />
@@ -88,35 +88,35 @@ export default function RegisterScreen({navigation}) {
             </Text>
             <Text>Email</Text>
             <TextInput
-              containerStyle={{ marginTop: 10 }}
+              containerStyle={{ marginBottom: 5, marginTop: 5 }}
               placeholder="Enter your email"
               value={email}
               onChangeText={(text) => setEmail(text)}
             />
             <Text>Name</Text>
             <TextInput
-              containerStyle={{ marginTop: 10 }}
+              containerStyle={{ marginBottom: 5, marginTop: 5 }}
               placeholder="Enter your name"
               value={name}
               onChangeText={(text) => setName(text)}
             />
             <Text>Last Name</Text>
             <TextInput
-              containerStyle={{ marginTop: 10 }}
+              containerStyle={{ marginBottom: 5, marginTop: 5 }}
               placeholder="Enter your last name"
               value={lastName}
               onChangeText={(text) => setLastName(text)}
             />
             <Text>Username</Text>
             <TextInput
-              containerStyle={{ marginTop: 10 }}
+              containerStyle={{ marginBottom: 5,marginTop: 5 }}
               placeholder="Enter your username"
               value={username}
               onChangeText={(text) => setUsername(text)}
             />
             <Text>Password</Text>
             <TextInput
-              containerStyle={{ marginTop: 10 }}
+              containerStyle={{ marginBottom: 5,marginTop: 5 }}
               placeholder="Enter your password"
               value={password}
               onChangeText={(text) => setPassword(text)}
@@ -124,17 +124,21 @@ export default function RegisterScreen({navigation}) {
             />
             <Text>Confirm Password</Text>
             <TextInput
-              containerStyle={{ marginTop: 10 }}
+              containerStyle={{marginBottom: 5, marginTop: 5 }}
               placeholder="Confirm your password"
               value={confirmPassword}
               onChangeText={(text) => setConfirmPassword(text)}
               secureTextEntry
             />
-            <Button
+            <Button 
               text={loading ? "Loading" : "Create an account"}
               onPress={register} // Call the register function when the button is pressed
               style={{
-                marginTop: 20,
+                marginTop: 15,
+                marginBottom: 10,
+                backgroundColor: '#EDF6F9', // Change background color to a shade of red
+                borderRadius: 8,
+                
               }}
               disabled={loading}
             />
@@ -143,7 +147,8 @@ export default function RegisterScreen({navigation}) {
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                marginTop: 15,
+                marginTop: 5,
+                marginBottom: 10,
                 justifyContent: "center",
               }}
             >

@@ -7,6 +7,6 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
     return(
-        <AuthContext.Provider value = "test value">{children}</AuthContext.Provider>
+        <AuthContext.Provider value={'http://localhost:8000'}>{children}</AuthContext.Provider>
     );
 }

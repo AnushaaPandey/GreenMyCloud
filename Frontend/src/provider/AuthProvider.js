@@ -12,7 +12,7 @@ const AuthProvider = (props) => {
   }, []);
 
   function checkLogin() {
-    axios.get("http://localhost:8000/api/auth/").then((response) => {
+    axios.get("http://localhost:8000").then((response) => {
       if (response.data) {
         setUser(true);
         // getUserData();

@@ -101,7 +101,6 @@ class EmissionData(models.Model):
     diet_emissions = models.FloatField(100)
     waste_emissions = models.FloatField(100)
     screentime_emission = models.FloatField(100)
-    total_emissions = models.FloatField(100)
 
 
 class AdminDatabase(models.Model):

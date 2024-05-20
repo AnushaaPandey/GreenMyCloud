@@ -7,6 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.models import auth
 from django.contrib.auth import authenticate, login, logout
+from bs4 import BeautifulSoup
+from django.http import JsonResponse
+import requests
+
+from CarbonFootprint.factors import CLIMATIQ_API_KEY, calculate_total_and_average_emissions
 # from .forms import LoginForm, CreateUserForm
 from .factors1 import calculate_emissions, estimate_emission
 from .models import EmissionData, Result 
@@ -79,241 +84,78 @@ class UserPasswordResetView(APIView):
     serializer.is_valid(raise_exception=True)
     return Response({'msg':'Password Reset Successfully'}, status=status.HTTP_200_OK)
 
-def homepage(request):
-    return render(request, 'registration/index.html')
 
-# def register(request):
-#     form = CreateUserForm()
-#     if request.method == "POST":
-#         form = CreateUserForm(request.POST)
-#         if form.is_valid():
-#             form.save() 
-#             return redirect("my-login")
-#         else:
-#             return HttpResponse("<h1> Registration Error!</h1>")
-
-#     context = {'form': form}
-#     return render(request, 'registration/register.html', context=context)
-
-# def my_login(request):
-#     form = LoginForm()
-
-#     if request.method == 'POST':
-#         form = LoginForm(request, data=request.POST)
-#         if form.is_valid():
-#             username = request.POST.get('username')
-#             password = request.POST.get('password')
-#             user = authenticate(request, username=username, password=password)
-#             if user is not None:
-#                 if user.is_active:
-#                     auth.login(request, user)
-#                     return redirect("dashboard")
-#                 else:
-#                     return HttpResponse("<h1> Invalid Login! </h1>")
-#             else:
-#                 messages.info(request, 'Username or Password is incorrect. ')
-
-#     context = {'form': form}
-#     return render(request, 'registration/my-login.html', context=context)
-
-
-
+  
 @login_required(login_url="login")
 # def user_logout(request):
 #         auth.logout(request)
 #         return redirect(request, 'my-login.html')
 def dashboard(request):
-    return render(request, 'registration/dashboard.html')
+   return JsonResponse(dashboard)
 
-def calc(request):
+def calculate_emissions(request):
     if request.method == 'POST':
-        distance = float(request.POST.get('distance', 0))
-        electricity = float(request.POST.get('electricity', 0))
-        waste = float(request.POST.get('waste', 0))
-        meals = int(request.POST.get('meals', 0))
-        screentime = int(request.POST.get('screentime',0))
-
-        emissions_data = calculate_emissions( distance, electricity, waste, meals, screentime)
-
-        return render(request, 'rest.html', {'emissions_data': emissions_data})
-    else:
-        return render(request, 'calc.html')
-
-def rest(request):
-    # Your logic for carbon_calculator_results view
-    return render(request, 'rest.html')
-
-# def calc(request):
-#     if request.method == 'POST':
-#         distance = float(request.POST.get('distance', 0))
-#         electricity = float(request.POST.get('electricity', 0))
-#         waste = float(request.POST.get('waste', 0))
-#         meals = int(request.POST.get('meals', 0))
-#         screentime = int(request.POST.get('screentime', 0))
-
-#         # Calculate emissions using the calculate_emissions function from factors.py
-#         emissions_data = calculate_emissions(distance, electricity, waste, meals, screentime)
-
-#         return render(request, 'rest.html', {'emissions_data': emissions_data})
-#     else:
-#         return render(request, 'calc.html')
-
-
-
-def calculate_user_emissions(request):
-    if request.method == 'POST':
-        # Assume user data is submitted via a form and saved in the database
-        electricity = request.POST.get('electricity')
-        waste = request.POST.get('waste')
-
-        # Save user data to the database
-        user_data = EmissionData.objects.create(electricity=electricity, waste=waste)
+        # Get input data from the POST request
+        transportation_mode = request.POST.get('transportation_mode')
+        transportation_distance = float(request.POST.get('transportation_distance'))
+        waste_weight_kg = float(request.POST.get('waste_weight_kg'))
+        electricity_kWh = float(request.POST.get('electricity_kWh'))
+        screentime_hours = float(request.POST.get('screentime_hours'))
+        dietary_meals = float(request.POST.get('dietary_meals'))
         
-        # Calculate emissions using user data
-        total_emissions = calculate_emissions(electricity, waste)
+        # Calculate emissions and save data into the database
+        result = calculate_total_and_average_emissions(
+            CLIMATIQ_API_KEY,
+            transportation_mode,
+            transportation_distance,
+            waste_weight_kg,
+            electricity_kWh,
+            screentime_hours,
+            dietary_meals
+        )
         
-        return render(request, 'result.html', {'total_emissions': total_emissions})
-    else:
-        return render(request, 'input_form.html')
-
-
-def api(APIView):
-   CLIMATIQ_API_KEY = "87BKX60S4TMRRGPZZ1342ZZZYTK4"
-   weight = 80
-   weight_unit = "t"
-   emission_estimate = estimate_emission(CLIMATIQ_API_KEY, weight, weight_unit)
-   if emission_estimate is not None:
-        print("API was Called")
-        return JsonResponse(emission_estimate)
-   else:
-        return JsonResponse({"error": "Failed to estimate emission"}, status=500)
-   
-   def get(self, request, format=None):
-      print("API was Called")
-      return Response("CHalyo hai chalyo", status=201)
-   
-
-
-def data(request):
-    data = {
-        'message': 'Hello, World!'
-    }
-    return JsonResponse(data)
-
-
-
-# # Models Import:
-# def user(request):
-#     users = User.objects.all()
-#     return render(request, 'user.html', {'users': users})
-
-# def userdata(request):
-#     usersdata = UserData.objects.all()
-#     return render(request, 'user.html', {'usersdata': usersdata})
-
-# def results(request):
-#     res = Result.objects.all()
-#     return render(request, 'user.html', {'res': res})
-
-
-# def admin_database(request):
-#     admin_databases = AdminDatabase.objects.all()
-#     return render(request, 'admin_database.html', {'admin_databases': admin_databases})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# from django.shortcuts import render, redirect 
-# import requests
-# from django.contrib.auth.forms import UserCreationForm
-# from django.contrib.auth.decorators import login_required
-# from django.http import JsonResponse
-# from django.http import HttpResponse
-# from django.contrib.auth.models import auth
-# from django.contrib.auth import authenticate, login, logout
-# from django.contrib.auth.forms import UserCreationForm
-
-
-
-# def homepage(request):
-
-#     return render(request, 'registration/index.html')
-
-
-
-
-# def register(request):
-
-#     form = CreateUserForm()
-
-#     if request.method == "POST":
-
-#         form = CreateUserForm(request.POST)
-
-#         if form.is_valid():
-
-#             form.save()
-
-#             return redirect("my-login")
-
-
-#     context = {'registerform':form}
-
-#     return render(request, 'registration/register.html', context=context)
-
-
-
-# def my_login(request):
-
-#     form = LoginForm()
-
-#     if request.method == 'POST':
-
-#         form = LoginForm(request, data=request.POST)
-
-#         if form.is_valid():
-
-#             username = request.POST.get('username')
-#             password = request.POST.get('password')
-
-#             user = authenticate(request, username=username, password=password)
-
-#             if user is not None:
-
-#                 auth.login(request, user)
-
-#                 return redirect("dashboard")
-
-
-#     context = {'loginform':form}
-
-#     return render(request, 'registration/my-login.html', context=context)
-
-
-# def user_logout(request):
-
-#     auth.logout(request)
-
-#     return redirect("")
-
-
-
-# @login_required(login_url="my_login")
-# def dashboard(request):
-
-#     return render(request, 'registration/dashboard.html')
+        # Return JSON response with the emissions data
+        return JsonResponse(result)
+
+
+
+def scrape_articles(request):
+    articles = []
+    
+    # Define the list of newspapers and their URLs
+    newspapers = [
+        {"name": "cityam", "address": "https://www.cityam.com/london-must-become-a-world-leader-on-climate-change-action/"},
+        {"name": "thetimes", "address": "https://www.thetimes.co.uk/environment/climate-change"},
+        # Add more newspapers here...
+    ]
+    
+    # Iterate over each newspaper
+    for newspaper in newspapers:
+        name = newspaper["name"]
+        address = newspaper["address"]
+        
+        # Make an HTTP request to the newspaper's URL
+        response = requests.get(address)
+        
+        # Parse the HTML content using BeautifulSoup
+        if response.status_code == 200:
+            html_content = response.text
+            soup = BeautifulSoup(html_content, "html.parser")
+            
+            # Extract article titles and URLs
+            for link in soup.find_all("a", string=lambda text: "climate" in str(text).lower()):
+                title = link.get_text()
+                url = link["href"]
+                
+                # Append the article to the list of articles
+                articles.append({
+                    "title": title,
+                    "url": url,
+                    "source": name
+                })
+    
+    # Return the scraped articles as JSON response
+    return JsonResponse(articles, safe=False)
 
 
 

@@ -1,53 +1,170 @@
-EMISSION_FACTORS = {
-    "Nepal": {
-        "Transportation": 0.14,  # kgCO2/km
-        "Electricity": 0.82,  # kgCO2/kWh
-        "Diet": 1.25,  # kgCO2/meal, 2.5kgco2/kg
-        "Waste": 0.1 , # kgCO2/kg
-        "screentime": (0.25) #energy consumption per hour
+# Functions for emissions calculation
+from .models import EmissionData, Result
+import requests
+CLIMATIQ_API_KEY = "87BKX60S4TMRRGPZZ1342ZZZYTK4"
+def transportation(CLIMATIQ_API_KEY, mode, distance):
+    url = "https://api.climatiq.io/estimate"
+    headers = {
+        "Authorization": f"Bearer {CLIMATIQ_API_KEY}"
     }
-}
 
-def calculate_emissions(distance, electricity, waste, meals, screentime):
-    # Normalize inputs
-    distance_yearly = distance * 365 if distance > 0 else 0
-    electricity_yearly = electricity * 12 if electricity > 0 else 0
-    meals_yearly = meals * 365 if meals > 0 else 0
-    waste_yearly = waste * 52 if waste > 0 else 0
-    screentime_yearly = screentime * 40 if screentime > 0 else 0
+    emission_factor_ids = {
+        "motorbike": "012059cc-4a5c-4f83-a5e6-8625ec10cfd5",
+        "ev_car": "54801be5-00b9-4b9d-a6d7-a48d67484035",
+        "car": "31d744e4-d202-4a9f-b0a9-30967a0448ff",
+        "diesel_car": "c3f31da2-29f2-48c6-a5ac-9a9f53e7f81f",
+        "petrol_car": "40ebe027-a9dd-4513-a286-7eaadb5b16ef",
+        "bus": "dd20350e-1a2d-49d9-ae18-f1e9ab78b34d",
+        "walk": " 0.14"
+    }
+    chosen_mode = emission_factor_ids  # Example mode chosen by the user
+    mode = emission_factor_ids.get(chosen_mode)
+    if mode not in emission_factor_ids:
+        raise ValueError("Invalid transportation mode. Choose from 'motorbike', 'ev_car', 'car', 'diesel_car', 'petrol_car', 'walk' or 'bus'.")
 
-    # Calculate carbon emissions using generic emission factors
-    transportation_emissions = EMISSION_FACTORS["Nepal"]["Transportation"] * distance_yearly
-    electricity_emissions = EMISSION_FACTORS["Nepal"]["Electricity"] * electricity_yearly
-    diet_emissions = EMISSION_FACTORS["Nepal"]["Diet"] * meals_yearly
-    waste_emissions = EMISSION_FACTORS["Nepal"]["Waste"] * waste_yearly
-    screentime_emission = EMISSION_FACTORS["Nepal"]["screentime"] * screentime_yearly
+    data = {
+        "emission_factor": {
+            "id": emission_factor_ids[mode]
+        },
+        "parameters": {
+            "distance": distance,
+            "distance_unit": "km"
+        }
+    }
 
-    # Convert emissions to tonnes and round off to 2 decimal points
-    transportation_emissions = round(transportation_emissions / 1000, 2)
-    electricity_emissions = round(electricity_emissions / 1000, 2)
-    diet_emissions = round(diet_emissions / 1000, 2)
-    waste_emissions = round(waste_emissions / 1000, 2) 
-    screentime_emission = round(screentime_emission / 1000, 2)
+    response = requests.post(url, headers=headers, json=data)
+    return response.json() if response.status_code == 200 else None
 
+
+def waste_emission(CLIMATIQ_API_KEY, weight_kg):
+    url = "https://api.climatiq.io/estimate"
+    headers = {
+        "Authorization": f"Bearer {CLIMATIQ_API_KEY}"
+    }
+    
+    # Convert weight from kilograms to tonnes
+    weight_tonnes = weight_kg / 1000
+
+    data = {
+        "emission_factor": {
+            "id": "8238f187-ccd7-4dde-bb8f-b68ad74c23e8"
+        },
+        "parameters": {
+            "weight": weight_tonnes,
+            "weight_unit": "t"
+        }
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    return response.json() if response.status_code == 200 else None
+
+
+def electricity_emission(CLIMATIQ_API_KEY, energy_kWh):
+    url = "https://api.climatiq.io/estimate"
+    headers = {
+        "Authorization": f"Bearer {CLIMATIQ_API_KEY}"
+    }
+
+    data = {
+        "emission_factor": {
+            "id": "c43cba1c-1810-460e-93a5-568f656dad80"
+        },
+        "parameters": {
+            "energy": energy_kWh,
+            "energy_unit": "kWh"
+        }
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    return response.json() if response.status_code == 200 else None
+
+
+
+
+def screentime_emission(screentime_hours):
+    # Emission factor for screen time (kgCO2e/kWh)
+    emission_factor = 0.25
+    
+    # Calculate energy consumption in kWh
+    energy_kWh = screentime_hours * emission_factor
+    
+    return energy_kWh
+
+
+def dietary_emission(meals):
+    # Emission factor for dietary consumption (kgCO2 per meal)
+    emission_factor_per_meal = 2.5
+    
     # Calculate total emissions
-    total_emissions = round(
-        transportation_emissions + electricity_emissions + diet_emissions + waste_emissions + screentime_emission, 2
+    total_emissions = meals * emission_factor_per_meal
+    
+    return total_emissions
+
+
+# Main function to calculate total emissions and average
+
+def calculate_total_and_average_emissions(CLIMATIQ_API_KEY, transportation_mode, transportation_distance, waste_weight_kg, electricity_kWh, screentime_hours, dietary_meals):
+    # Calculate emissions for transportation
+    transportation_emissions = transportation(CLIMATIQ_API_KEY, transportation_mode, transportation_distance)
+    
+    # Calculate emissions for waste
+    waste_emissions = waste_emission(CLIMATIQ_API_KEY, waste_weight_kg)
+    
+    # Calculate emissions for electricity
+    electricity_emissions = electricity_emission(CLIMATIQ_API_KEY, electricity_kWh)
+    
+    # Calculate emissions for screentime
+    screentime_emissions = screentime_emission(screentime_hours)
+    
+    # Calculate emissions for dietary consumption
+    dietary_emissions = dietary_emission(dietary_meals)
+    
+    # Calculate total emissions
+    total_emissions = (
+        transportation_emissions + 
+        waste_emissions + 
+        electricity_emissions + 
+        screentime_emissions + 
+        dietary_emissions
     )
-
-    # Print the emissions
-    print("Transportation emissions:", transportation_emissions)
-    print("Electricity emissions:", electricity_emissions)
-    print("Diet emissions:", diet_emissions)
-    print("Waste emissions:", waste_emissions)
-    print("Screentime emissions:", screentime_emission)
-    print("Total emissions:", total_emissions)
-
+    
+    # Calculate average emissions
+    total_count = 5  # Number of emissions sources
+    average_emissions = total_emissions / total_count
+    
+    input_data = EmissionData.objects.create(
+        transportation_mode=transportation_mode,
+        transportation_distance=transportation_distance,
+        waste_weight_kg=waste_weight_kg,
+        electricity_kWh=electricity_kWh,
+        screentime_hours=screentime_hours,
+        dietary_meals=dietary_meals
+    )
+    
+    # Save emissions results into the database
+    result = Result.objects.create(
+        transportation_emissions=transportation_emissions,
+        waste_emissions=waste_emissions,
+        electricity_emissions=electricity_emissions,
+        screentime_emissions=screentime_emissions,
+        dietary_emissions=dietary_emissions,
+        total_emissions=total_emissions,
+        average_emissions=average_emissions
+    )
+    
+    # Return all emissions and the average
     return {
         "transportation_emissions": transportation_emissions,
-        "electricity_emissions": electricity_emissions,
-        "diet_emissions": diet_emissions,
         "waste_emissions": waste_emissions,
-        "screentime_emission": screentime_emission,
-        "total_emissions": total_emissions
+        "electricity_emissions": electricity_emissions,
+        "screentime_emissions": screentime_emissions,
+        "dietary_emissions": dietary_emissions,
+        "total_emissions": total_emissions,
+        "average_emissions": average_emissions
     }
+
+
+# Example usage:
+# CLIMATIQ_API_KEY = 'YOUR_CLIMATIQ_API_KEY'
+# emissions_data = calculate_total_and_average_emissions(CLIMATIQ_API_KEY, 'car', 100, 50, 1000, 2, 3)
+# print(emissions_data)

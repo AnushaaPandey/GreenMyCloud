@@ -6,6 +6,7 @@ import SplashScreen from "./src/screens/splash";
 import AppNavigator from "./src/navigation/AppNavigator";
 import 'react-native-gesture-handler'; // Ensure this is at the top
 import axios from 'axios'; // Import Axios
+import Dashboard from "./src/screens/Dashboard";
 
 axios.defaults.baseURL = 'http://localhost:8000'; 
 

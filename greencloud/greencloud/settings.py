@@ -16,7 +16,7 @@ from datetime import timedelta
 import os
 
 # import rest_framework 
-
+ALLOWED_HOST = ['://192.168.56.1:8000']
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -196,4 +196,5 @@ PASSWORD_RESET_TIMEOUT=900          # 900 Sec = 15 Min
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
+    "https://192.168.56.1:8000"
 ]
