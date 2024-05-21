@@ -1,3 +1,4 @@
+
 import requests
 
 def estimate_emission(CLIMATIQ_API_KEY, weight, weight_unit):

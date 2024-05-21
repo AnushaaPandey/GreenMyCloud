@@ -1,3 +1,4 @@
+
 from django.urls import path , include
 import rest_framework 
 from . import views
@@ -28,3 +29,4 @@ urlpatterns = [
     # path('calc', views.calc, name='calc'),
     # path('rest', views.rest, name='rest'),
         # path('api/data/', views.data, name='data'),
+

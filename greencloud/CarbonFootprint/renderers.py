@@ -1,3 +1,4 @@
+
 from rest_framework import renderers
 import json
 
@@ -10,4 +11,5 @@ class UserRenderer(renderers.JSONRenderer):
     else:
       response = json.dumps(data)
     
+
     return response

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 mysqlclient
 requests
 django
@@ -5,3 +6,11 @@ django-rest-framework
 django-cors-headers
 djangorestframework-simplejwt
 bs4
+=======
+mysqlclient
+requests
+django
+django-rest-framework
+django-cors-headers
+djangorestframework-simplejwt
+>>>>>>> origin/main

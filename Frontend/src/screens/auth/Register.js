@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image } from "react-native";
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from "react-native-rapi-ui";
@@ -198,3 +199,4 @@ export default function RegisterScreen({navigation}) {
     </KeyboardAvoidingView>
   );
 }
+

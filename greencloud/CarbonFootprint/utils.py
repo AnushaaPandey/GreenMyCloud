@@ -1,3 +1,4 @@
+
 from django.core.mail import EmailMessage
 import os
 
@@ -10,4 +11,5 @@ class Util:
       from_email=os.environ.get('EMAIL_FROM'),
       to=[data['to_email']]
     )
+
     email.send()

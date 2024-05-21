@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -119,3 +120,4 @@ const styles = StyleSheet.create({
 });
 
 export default CarbonEmission;
+

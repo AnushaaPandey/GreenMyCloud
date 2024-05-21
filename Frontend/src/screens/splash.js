@@ -1,3 +1,4 @@
+
 import React, { useRef, useEffect } from 'react';
 import { View, StyleSheet, Image, Animated } from 'react-native';
 
@@ -111,4 +112,3 @@ export default SplashScreen;
 //     height: 100,
 //     resizeMode: "cover",
 //   },
-// });

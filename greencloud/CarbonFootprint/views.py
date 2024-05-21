@@ -1,3 +1,4 @@
+
 import uuid
 from django.shortcuts import render, redirect 
 from rest_framework.views import APIView
@@ -10,7 +11,6 @@ from django.contrib.auth import authenticate, login, logout
 from bs4 import BeautifulSoup
 from django.http import JsonResponse
 import requests
-
 from CarbonFootprint.factors import CLIMATIQ_API_KEY, calculate_total_and_average_emissions
 # from .forms import LoginForm, CreateUserForm
 from .factors1 import calculate_emissions, estimate_emission
@@ -111,7 +111,8 @@ def calculate_emissions(request):
             waste_weight_kg,
             electricity_kWh,
             screentime_hours,
-            dietary_meals
+            dietary_meals,
+            request
         )
         
         # Return JSON response with the emissions data
@@ -156,6 +157,7 @@ def scrape_articles(request):
     
     # Return the scraped articles as JSON response
     return JsonResponse(articles, safe=False)
+
 
 
 

@@ -8,6 +8,8 @@ import 'react-native-gesture-handler'; // Ensure this is at the top
 import axios from 'axios'; // Import Axios
 import Dashboard from "./src/screens/Dashboard";
 
+
+
 axios.defaults.baseURL = 'http://localhost:8000'; 
 
 const App = () => {

@@ -1,3 +1,4 @@
+
 import threading
 from django.conf import settings
 from django.core.mail import send_mail
@@ -37,4 +38,5 @@ class SendForgetPasswordEmail(threading.Thread):
             recipient_list = [self.email]
             send_mail(subject, message, email_from, recipient_list)
         except Exception as e:
+
             print(e)
