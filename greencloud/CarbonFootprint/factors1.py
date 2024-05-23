@@ -1,63 +1,64 @@
 
-import requests
+# def calculate_total_and_average_emissions(CLIMATIQ_API_KEY, transportation_mode, transportation_distance, waste_weight_kg, electricity_kWh, screentime_hours, dietary_meals, request, days_in_year=365):
+#     transportation_emissions = transportation(CLIMATIQ_API_KEY, transportation_mode, transportation_distance, request)
+#     waste_emissions = waste_emission(CLIMATIQ_API_KEY, waste_weight_kg, request)
+#     electricity_emissions = electricity_emission(CLIMATIQ_API_KEY, electricity_kWh, request)
+#     screentime_emissions = screentime_emission(screentime_hours)
+#     dietary_emissions = dietary_emission(dietary_meals)
 
-def estimate_emission(CLIMATIQ_API_KEY, weight, weight_unit):
-    url = "https://api.climatiq.io/estimate"
-    headers = {
-        "Authorization": f"Bearer {CLIMATIQ_API_KEY}"
-    }
-    data = {
-        "emission_factor": {
-            "activity_id": "waste-type_organic_food_and_drink-disposal_method_anaerobic_digestion",
-            "source": "BEIS",
-            "region": "GB",
-            "year": 2023,
-            "source_lca_activity": "end_of_life",
-            "data_version": "11.11"
-        },
-        "parameters": {
-            "weight": weight,
-            "weight_unit": weight_unit
-        }
-    }
-   
+#     # Calculate daily total emissions
+#     total_emissions_daily = (
+#         transportation_emissions['co2e'] + 
+#         waste_emissions['co2e'] + 
+#         electricity_emissions['co2e'] + 
+#         screentime_emissions + 
+#         dietary_emissions
+#     )
 
-    response = requests.post(url, headers=headers, json=data)
-    return response.json() if response.status_code == 200 else None
-pass
+#     # Calculate daily average emissions
+#     total_count = 5
+#     average_emissions_daily = total_emissions_daily / total_count
 
-def elec_emission(CLIMATIQ_API_KEY, energy, energy_unit):
-    url = "https://api.climatiq.io/data/v1/estimate"
-    headers = {
-        "Authorization": f"Bearer {CLIMATIQ_API_KEY}"
-    }
-    data = {
-        "emission_factor": {
-            "activity_id": "electricity-supply_grid-source_residual_mix",
-            "data_version": "^6"
-        },
-        "parameters": {
-            "energy": energy,
-            "energy_unit": energy_unit
-        }
-    }
+#     # Calculate yearly total emissions
+#     total_emissions_yearly = total_emissions_daily * days_in_year
 
-    response = requests.post(url, headers=headers, json=data)
-    return response.json() if response.status_code == 200 else None
-pass
+#     # Calculate yearly average emissions
+#     average_emissions_yearly = average_emissions_daily * days_in_year
 
-def calculate_emissions(distance, electricity, waste, meals, screentime):
-    CLIMATIQ_API_KEY = '87BKX60S4TMRRGPZZ1342ZZZYTK4'
+#     input_data = EmissionData.objects.create(
+#         transportation_mode=transportation_mode,
+#         transportation_distance=transportation_distance,
+#         waste_weight_kg=waste_weight_kg,
+#         electricity_kWh=electricity_kWh,
+#         screentime_hours=screentime_hours,
+#         dietary_meals=dietary_meals,
+#         transportation_emissions=transportation_emissions['co2e'],
+#         waste_emissions=waste_emissions['co2e'],
+#         electricity_emissions=electricity_emissions['co2e'],
+#         screentime_emissions=screentime_emissions,
+#         dietary_emissions=dietary_emissions,
+#         total_emissions=total_emissions_daily,  # Store daily emissions
+#         average_emissions=average_emissions_daily  # Store daily average emissions
+#     )
 
-    # Call API to estimate emissions
-    waste_emissions = estimate_emission(CLIMATIQ_API_KEY, waste, "kg")
-    electricity_emissions = elec_emission(CLIMATIQ_API_KEY, electricity, "kWh")
+#     result = Result.objects.create(
+#         transportation_emissions=transportation_emissions['co2e'],
+#         waste_emissions=waste_emissions['co2e'],
+#         electricity_emissions=electricity_emissions['co2e'],
+#         screentime_emissions=screentime_emissions,
+#         dietary_emissions=dietary_emissions,
+#         total_emissions=total_emissions_yearly,  # Store yearly emissions
+#         average_emissions=average_emissions_yearly  # Store yearly average emissions
+#     )
 
-    # Add more API calls or modify as needed
-
-    # Calculate total emissions if required
-    total_emissions = waste_emissions + electricity_emissions
-    print (total_emissions)
-
-    return total_emissions
-
+#     return {
+#         "transportation_emissions": transportation_emissions,
+#         "waste_emissions": waste_emissions,
+#         "electricity_emissions": electricity_emissions,
+#         "screentime_emissions": screentime_emissions,
+#         "dietary_emissions": dietary_emissions,
+#         "total_emissions_daily": total_emissions_daily,
+#         "average_emissions_daily": average_emissions_daily,
+#         "total_emissions_yearly": total_emissions_yearly,
+#         "average_emissions_yearly": average_emissions_yearly
+#     }

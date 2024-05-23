@@ -1,4 +1,5 @@
 
+import json
 import uuid
 from django.shortcuts import render, redirect 
 from rest_framework.views import APIView
@@ -13,7 +14,7 @@ from django.http import JsonResponse
 import requests
 from CarbonFootprint.factors import CLIMATIQ_API_KEY, calculate_total_and_average_emissions
 # from .forms import LoginForm, CreateUserForm
-from .factors1 import calculate_emissions, estimate_emission
+from .factors import calculate_total_and_average_emissions, CLIMATIQ_API_KEY
 from .models import EmissionData, Result 
 from rest_framework.response import Response
 from rest_framework import status
@@ -23,6 +24,9 @@ from django.contrib.auth import authenticate
 from .renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_exempt
+
 
 # Generate Token Manually
 def get_tokens_for_user(user):
@@ -31,6 +35,8 @@ def get_tokens_for_user(user):
       'refresh': str(refresh),
       'access': str(refresh.access_token),
   }
+
+
 
 class UserRegistrationView(APIView):
   renderer_classes = [UserRenderer]
@@ -93,32 +99,58 @@ class UserPasswordResetView(APIView):
 def dashboard(request):
    return JsonResponse(dashboard)
 
+# def calculate_emissions(request):
+#     if request.method == 'POST':
+#         # Get input data from the POST request
+#         transportation_mode = request.POST.get('transportation_mode')
+#         transportation_distance = float(request.POST.get('transportation_distance'))
+#         waste_weight_kg = float(request.POST.get('waste_weight_kg'))
+#         electricity_kWh = float(request.POST.get('electricity_kWh'))
+#         screentime_hours = float(request.POST.get('screentime_hours'))
+#         dietary_meals = float(request.POST.get('dietary_meals'))
+        
+#         # Calculate emissions and save data into the database
+#         result = calculate_total_and_average_emissions(
+#             CLIMATIQ_API_KEY,
+#             transportation_mode,
+#             transportation_distance,
+#             waste_weight_kg,
+#             electricity_kWh,
+#             screentime_hours,
+#             dietary_meals,
+#             request
+#         )
+        
+#         # Return JSON response with the emissions data
+#         return JsonResponse(result)
+
+@csrf_exempt  # Temporarily exempt from CSRF for testing; remove in production
 def calculate_emissions(request):
     if request.method == 'POST':
-        # Get input data from the POST request
-        transportation_mode = request.POST.get('transportation_mode')
-        transportation_distance = float(request.POST.get('transportation_distance'))
-        waste_weight_kg = float(request.POST.get('waste_weight_kg'))
-        electricity_kWh = float(request.POST.get('electricity_kWh'))
-        screentime_hours = float(request.POST.get('screentime_hours'))
-        dietary_meals = float(request.POST.get('dietary_meals'))
-        
-        # Calculate emissions and save data into the database
-        result = calculate_total_and_average_emissions(
-            CLIMATIQ_API_KEY,
-            transportation_mode,
-            transportation_distance,
-            waste_weight_kg,
-            electricity_kWh,
-            screentime_hours,
-            dietary_meals,
-            request
-        )
-        
-        # Return JSON response with the emissions data
-        return JsonResponse(result)
+        try:
+            data = json.loads(request.body)
+            transportation_mode = data['transportation_mode']
+            transportation_distance = float(data['transportation_distance'])
+            waste_weight_kg = float(data['waste_weight_kg'])
+            electricity_kWh = float(data['electricity_kWh'])
+            screentime_hours = float(data['screentime_hours'])
+            dietary_meals = float(data['dietary_meals'])
 
-
+            result = calculate_total_and_average_emissions(
+                CLIMATIQ_API_KEY,
+                transportation_mode,
+                transportation_distance,
+                waste_weight_kg,
+                electricity_kWh,
+                screentime_hours,
+                dietary_meals,
+                request
+            )
+            return JsonResponse(result)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
 
 def scrape_articles(request):
     articles = []
@@ -157,6 +189,11 @@ def scrape_articles(request):
     
     # Return the scraped articles as JSON response
     return JsonResponse(articles, safe=False)
+  
+
+def get_csrf_token(request):
+    token = get_token(request)
+    return JsonResponse({'csrfToken': token})
 
 
 

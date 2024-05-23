@@ -2,7 +2,7 @@
 from django.utils import timezone 
 from django.db import models
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser, PermissionsMixin
-from .factors1 import calculate_emissions
+
 
 class UserManager(BaseUserManager):
   def create_user(self, email, name, lastname,  username,  password=None, password2=None):
@@ -89,19 +89,28 @@ class UserData(models.Model):
     screentime_emissions = models.FloatField()
 
 class Result(models.Model):
-    res_transportation = models.FloatField()
-    res_waste = models.FloatField()
-    res_dietary_plan = models.FloatField()
-    res_electricity = models.FloatField()
-    res_screentime = models.FloatField()
-    total = models.FloatField()
-
+    transportation_emissions = models.FloatField()
+    waste_emissions = models.FloatField()
+    electricity_emissions = models.FloatField()
+    screentime_emissions = models.FloatField()
+    dietary_emissions = models.FloatField()
+    total_emissions = models.FloatField()
+    average_emissions = models.FloatField()
+    
 class EmissionData(models.Model):
-    transportation_emissions = models.FloatField(100)
-    electricity_emissions = models.FloatField(100)
-    diet_emissions = models.FloatField(100)
-    waste_emissions = models.FloatField(100)
-    screentime_emission = models.FloatField(100)
+    transportation_mode = models.CharField(max_length=50)
+    transportation_distance = models.FloatField()
+    waste_weight_kg = models.FloatField()
+    electricity_kWh = models.FloatField()
+    screentime_hours = models.FloatField()
+    dietary_meals = models.FloatField()
+    transportation_emissions = models.FloatField()
+    waste_emissions = models.FloatField()
+    electricity_emissions = models.FloatField()
+    screentime_emissions = models.FloatField()
+    dietary_emissions = models.FloatField()
+    total_emissions = models.FloatField()
+    average_emissions = models.FloatField()
 
 
 class AdminDatabase(models.Model):
@@ -110,4 +119,5 @@ class AdminDatabase(models.Model):
 
     def __str__(self):
         return self.api_data
+
 

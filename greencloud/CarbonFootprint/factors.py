@@ -3,6 +3,7 @@ from django.middleware.csrf import get_token
 from .models import EmissionData, Result
 
 CLIMATIQ_API_KEY = "87BKX60S4TMRRGPZZ1342ZZZYTK4"
+#       "csrfToken": "ta9n4fr0FrIPkV0zgYxd95DtfQrkVbLNdiK55y3GRC8g5IuT0eqXSOFWICLhLVia"
 
 def transportation(CLIMATIQ_API_KEY, mode, distance, request):
     url = "https://api.climatiq.io/estimate"
@@ -23,7 +24,7 @@ def transportation(CLIMATIQ_API_KEY, mode, distance, request):
     
     if mode not in emission_factor_ids:
         raise ValueError("Invalid transportation mode. Choose from 'motorbike', 'ev_car', 'car', 'diesel_car', 'petrol_car', 'walk' or 'bus'.")
-
+    
     emission_factor_id = emission_factor_ids[mode]
 
     data = {
@@ -35,6 +36,7 @@ def transportation(CLIMATIQ_API_KEY, mode, distance, request):
             "distance_unit": "km"
         }
     }
+    
 
     response = requests.post(url, headers=headers, json=data)
     if response.status_code == 200:
@@ -100,13 +102,14 @@ def dietary_emission(meals):
     total_emissions = meals * emission_factor_per_meal
     return total_emissions
 
+
 def calculate_total_and_average_emissions(CLIMATIQ_API_KEY, transportation_mode, transportation_distance, waste_weight_kg, electricity_kWh, screentime_hours, dietary_meals, request):
     transportation_emissions = transportation(CLIMATIQ_API_KEY, transportation_mode, transportation_distance, request)
     waste_emissions = waste_emission(CLIMATIQ_API_KEY, waste_weight_kg, request)
     electricity_emissions = electricity_emission(CLIMATIQ_API_KEY, electricity_kWh, request)
     screentime_emissions = screentime_emission(screentime_hours)
     dietary_emissions = dietary_emission(dietary_meals)
-    
+
     total_emissions = (
         transportation_emissions['co2e'] + 
         waste_emissions['co2e'] + 
@@ -114,29 +117,36 @@ def calculate_total_and_average_emissions(CLIMATIQ_API_KEY, transportation_mode,
         screentime_emissions + 
         dietary_emissions
     )
-    
+
     total_count = 5
     average_emissions = total_emissions / total_count
-    
+
     input_data = EmissionData.objects.create(
         transportation_mode=transportation_mode,
         transportation_distance=transportation_distance,
         waste_weight_kg=waste_weight_kg,
         electricity_kWh=electricity_kWh,
         screentime_hours=screentime_hours,
-        dietary_meals=dietary_meals
-    )
-    
-    result = Result.objects.create(
-        transportation_emissions=transportation_emissions,
-        waste_emissions=waste_emissions,
-        electricity_emissions=electricity_emissions,
+        dietary_meals=dietary_meals,
+        transportation_emissions=transportation_emissions['co2e'],
+        waste_emissions=waste_emissions['co2e'],
+        electricity_emissions=electricity_emissions['co2e'],
         screentime_emissions=screentime_emissions,
         dietary_emissions=dietary_emissions,
         total_emissions=total_emissions,
         average_emissions=average_emissions
     )
-    
+
+    result = Result.objects.create(
+        transportation_emissions=transportation_emissions['co2e'],
+        waste_emissions=waste_emissions['co2e'],
+        electricity_emissions=electricity_emissions['co2e'],
+        screentime_emissions=screentime_emissions,
+        dietary_emissions=dietary_emissions,
+        total_emissions=total_emissions,
+        average_emissions=average_emissions
+    )
+
     return {
         "transportation_emissions": transportation_emissions,
         "waste_emissions": waste_emissions,
@@ -146,6 +156,66 @@ def calculate_total_and_average_emissions(CLIMATIQ_API_KEY, transportation_mode,
         "total_emissions": total_emissions,
         "average_emissions": average_emissions
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def calculate_total_and_average_emissions(CLIMATIQ_API_KEY, transportation_mode, transportation_distance, waste_weight_kg, electricity_kWh, screentime_hours, dietary_meals, request):
+#     transportation_emissions = transportation(CLIMATIQ_API_KEY, transportation_mode, transportation_distance, request)
+#     waste_emissions = waste_emission(CLIMATIQ_API_KEY, waste_weight_kg, request)
+#     electricity_emissions = electricity_emission(CLIMATIQ_API_KEY, electricity_kWh, request)
+#     screentime_emissions = screentime_emission(screentime_hours)
+#     dietary_emissions = dietary_emission(dietary_meals)
+    
+#     total_emissions = (
+#         transportation_emissions['co2e'] + 
+#         waste_emissions['co2e'] + 
+#         electricity_emissions['co2e'] + 
+#         screentime_emissions + 
+#         dietary_emissions
+#     )
+    
+#     total_count = 5
+#     average_emissions = total_emissions / total_count
+    
+#     input_data = EmissionData.objects.create(
+#         transportation_mode=transportation_mode,
+#         transportation_distance=transportation_distance,
+#         waste_weight_kg=waste_weight_kg,
+#         electricity_kWh=electricity_kWh,
+#         screentime_hours=screentime_hours,
+#         dietary_meals=dietary_meals
+#     )
+    
+#     result = Result.objects.create(
+#         transportation_emissions=transportation_emissions,
+#         waste_emissions=waste_emissions,
+#         electricity_emissions=electricity_emissions,
+#         screentime_emissions=screentime_emissions,
+#         dietary_emissions=dietary_emissions,
+#         total_emissions=total_emissions,
+#         average_emissions=average_emissions
+#     )
+    
+#     return {
+#         "transportation_emissions": transportation_emissions,
+#         "waste_emissions": waste_emissions,
+#         "electricity_emissions": electricity_emissions,
+#         "screentime_emissions": screentime_emissions,
+#         "dietary_emissions": dietary_emissions,
+#         "total_emissions": total_emissions,
+#         "average_emissions": average_emissions
+#     }
 
 
 

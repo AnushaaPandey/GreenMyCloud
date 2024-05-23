@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from "react-native-rapi-ui";
-import { AuthProvider } from "./src/Context/AuthContext";
+// import { AuthProvider } from "./src/Provider/AuthProvider";
 import SplashScreen from "./src/screens/splash";
 import AppNavigator from "./src/navigation/AppNavigator";
 import 'react-native-gesture-handler'; // Ensure this is at the top

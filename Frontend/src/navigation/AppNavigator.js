@@ -21,7 +21,7 @@ export default function AppNavigator(){
   return(
     <NavigationContainer>
       <Stack.Navigator >
-        {/* <Stack.Screen screenOptions={{
+        <Stack.Screen screenOptions={{
           headerStyle: {
             backgroundColor: '#007bff', // Change header background color
           },
@@ -31,7 +31,7 @@ export default function AppNavigator(){
           },
         }} name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} /> */}
+        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="Dashboard" component={Dashboard} />
         <Stack.Screen name= "CarbonEmissions" component={CarbonEmission} />
         <Stack.Screen name= "Results" component={Results} />

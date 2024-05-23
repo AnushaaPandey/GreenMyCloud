@@ -1,10 +1,7 @@
 
-from django.urls import path , include
-import rest_framework 
-from . import views
+from django.urls import path 
 from .views import UserRegistrationView, UserLoginView, UserProfileView, UserChangePasswordView, SendPasswordResetEmailView, UserPasswordResetView
-from . import factors1
-from .views import scrape_articles
+from .views import scrape_articles, get_csrf_token, calculate_emissions
 
 
 urlpatterns = [
@@ -14,8 +11,9 @@ urlpatterns = [
     path('changepassword/', UserChangePasswordView.as_view(), name='changepassword'),
     path('send-reset-password-email/', SendPasswordResetEmailView.as_view(), name='send-reset-password-email'),
     path('reset-password/<uid>/<token>/', UserPasswordResetView.as_view(), name='reset-password'),
-    path('calculate_emission/', factors1.calculate_emissions, name="calculate_emissions"),
+    path('calculate_emission/', calculate_emissions, name="calculate_emissions"),
     path('scrape-articles/', scrape_articles, name='scrape_articles'),
+    path('api/csrf/', get_csrf_token, name='get_csrf_token'),
 
   
   

@@ -2,7 +2,7 @@
 import React, { useContext, useState } from 'react';
 import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image, Alert, Switch } from 'react-native';
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from 'react-native-rapi-ui';
-import { AuthContext } from "../../Context/AuthContext";
+import { AuthContext } from "../../Provider/AuthProvider";
 import axios from 'axios';
 
 export default function LoginScreen({ navigation }) {

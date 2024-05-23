@@ -1,6 +1,6 @@
 
 from django.contrib import admin
-from .models import User 
+from .models import User , EmissionData,Result
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 class UserModelAdmin(BaseUserAdmin):
@@ -24,3 +24,25 @@ class UserModelAdmin(BaseUserAdmin):
   filter_horizontal = ()
   
 #   admin.site.register(BaseUserAdmin, User)
+
+# @admin.register(EmissionData)
+class EmissionDataAdmin(admin.ModelAdmin):
+    list_display = (
+        'transportation_mode', 'transportation_distance', 'waste_weight_kg',
+        'electricity_kWh', 'screentime_hours', 'dietary_meals',
+        'transportation_emissions', 'waste_emissions', 'electricity_emissions',
+        'screentime_emissions', 'dietary_emissions', 'total_emissions',
+        'average_emissions'
+    )
+
+# @admin.register(Result)
+class ResultAdmin(admin.ModelAdmin):
+    list_display = (
+        'transportation_emissions', 'waste_emissions', 
+        'electricity_emissions', 'screentime_emissions', 
+        'dietary_emissions', 'total_emissions', 'average_emissions'
+    )
+    
+admin.site.register(User, UserModelAdmin)
+admin.site.register(EmissionData, EmissionDataAdmin)
+admin.site.register(Result, ResultAdmin)

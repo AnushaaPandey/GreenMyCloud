@@ -1,6 +1,6 @@
 
 from rest_framework import serializers
-from .models import User
+from .models import User, EmissionData, Result
 from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -110,4 +110,12 @@ class UserPasswordResetSerializer(serializers.Serializer):
       PasswordResetTokenGenerator().check_token(user, token)
       raise serializers.ValidationError('Token is not Valid or Expired')
 
-  
+class EmissionDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EmissionData
+        fields = '__all__'
+
+class ResultSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Result
+        fields = '__all__'
