@@ -1,10 +1,9 @@
-
 import React, { useState } from "react";
-import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image } from "react-native";
+import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image, Alert, Switch } from "react-native";
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from "react-native-rapi-ui";
 import axios from 'axios'; // Import Axios for making HTTP requests
 
-export default function RegisterScreen({navigation}) {
+export default function RegisterScreen({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
@@ -14,44 +13,47 @@ export default function RegisterScreen({navigation}) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const register = () => {
-    // Validation checks
+  const register = async () => {
     if (!email || !name || !lastName || !username || !password || !confirmPassword) {
-      alert("Please fill in all fields.");
+      Alert.alert("Error", "Please fill in all fields.");
       return;
     }
     if (password !== confirmPassword) {
-      alert("Passwords do not match.");
+      Alert.alert("Error", "Passwords do not match.");
       return;
     }
 
-    // Make an HTTP POST request to the registration endpoint of your Django backend
-    axios.post('http://localhost:8000/register/', {
-      email: email,
-      name: name,
-      lastName: lastName,
-      username: username,
-      password: password
-    })
-    .then(response => {
+    setLoading(true);
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/register/', {
+        email: email,
+        name: name,
+        last_name: lastName, // Adjust the key name to match your backend serializer
+        username: username,
+        password: password
+      });
       console.log("Registration successful:", response.data);
-      // Add navigation or any other logic upon successful registration
+      Alert.alert("Success", "Registration successful. Please log in.");
       navigation.navigate("Login");
-    })
-    .catch(error => {
-      console.error("Registration failed:", error);
-      // Handle registration failure, e.g., display an error message
-    });
+    } catch (error) {
+      console.error("Registration failed:", error.response ? error.response.data : error.message);
+      Alert.alert("Error", error.response ? error.response.data.msg : "An unexpected error occurred");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
       <Layout>
-        <ScrollView
-          contentContainerStyle={{
-            flexGrow: 1,
-          }}
-        >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', marginTop: 0 }}>
+            <Switch
+              style={{ marginLeft: 0 }}
+              value={isDarkmode}
+              onValueChange={() => setTheme(isDarkmode ? 'light' : 'dark')}
+            />
+          </View>
           <View
             style={{
               flex: 1,
@@ -62,10 +64,7 @@ export default function RegisterScreen({navigation}) {
           >
             <Image
               resizeMode="contain"
-              style={{
-                height: 225,
-                width: 225,
-              }}
+              style={{ height: 225, width: 225 }}
               source={require("../../../assets/Images/register.png")}
             />
           </View>
@@ -80,10 +79,7 @@ export default function RegisterScreen({navigation}) {
             <Text
               fontWeight="bold"
               size="h3"
-              style={{
-                alignSelf: "center",
-                padding: 30,
-              }}
+              style={{ alignSelf: "center", padding: 30 }}
             >
               Register
             </Text>
@@ -110,14 +106,14 @@ export default function RegisterScreen({navigation}) {
             />
             <Text>Username</Text>
             <TextInput
-              containerStyle={{ marginBottom: 5,marginTop: 5 }}
+              containerStyle={{ marginBottom: 5, marginTop: 5 }}
               placeholder="Enter your username"
               value={username}
               onChangeText={(text) => setUsername(text)}
             />
             <Text>Password</Text>
             <TextInput
-              containerStyle={{ marginBottom: 5,marginTop: 5 }}
+              containerStyle={{ marginBottom: 5, marginTop: 5 }}
               placeholder="Enter your password"
               value={password}
               onChangeText={(text) => setPassword(text)}
@@ -125,25 +121,23 @@ export default function RegisterScreen({navigation}) {
             />
             <Text>Confirm Password</Text>
             <TextInput
-              containerStyle={{marginBottom: 5, marginTop: 5 }}
+              containerStyle={{ marginBottom: 5, marginTop: 5 }}
               placeholder="Confirm your password"
               value={confirmPassword}
               onChangeText={(text) => setConfirmPassword(text)}
               secureTextEntry
             />
-            <Button 
-              text={loading ? "Loading" : "Create an account"}
-              onPress={register} // Call the register function when the button is pressed
+            <Button
+              text={loading ? "Loading..." : "Create an account"}
+              onPress={register}
               style={{
                 marginTop: 15,
                 marginBottom: 10,
-                backgroundColor: '#EDF6F9', // Change background color to a shade of red
+                backgroundColor: '#EDF6F9',
                 borderRadius: 8,
-                
               }}
               disabled={loading}
             />
-
             <View
               style={{
                 flexDirection: "row",
@@ -154,42 +148,13 @@ export default function RegisterScreen({navigation}) {
               }}
             >
               <Text size="md">Already have an account?</Text>
-              <TouchableOpacity  onPress={() => {
-                  navigation.navigate('Login');
-                }}
-              >
+              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
                 <Text
                   size="md"
                   fontWeight="bold"
-                  style={{
-                    marginLeft: 5,
-                  }}
+                  style={{ marginLeft: 5 }}
                 >
                   Login here
-                </Text>
-              </TouchableOpacity>
-            </View>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 30,
-                justifyContent: "center",
-              }}
-            >
-              <TouchableOpacity
-                onPress={() => {
-                  isDarkmode ? setTheme("light") : setTheme("dark");
-                }}
-              >
-                <Text
-                  size="md"
-                  fontWeight="bold"
-                  style={{
-                    marginLeft: 5,
-                  }}
-                >
-                  {isDarkmode ? "☀️ light theme" : "🌑 dark theme"}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -199,4 +164,3 @@ export default function RegisterScreen({navigation}) {
     </KeyboardAvoidingView>
   );
 }
-

@@ -1,36 +1,116 @@
-import React, { createContext, useState, useContext } from "react";
-import axios from "axios";
+// // AuthProvider.js
+// import React, { useState, useEffect } from 'react';
+// import axios from 'axios';
+// import AuthContext from '../context/AuthContext'
 
-const AuthContext = createContext();
+// const AuthProvider = ({ children }) => {
+//   const [user, setUser] = useState(null);
 
-const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+//   useEffect(() => {
+//     checkLogin();
+//   }, []);
 
-  const login = async (username, password) => {
-    try {
-      const response = await axios.post("http://localhost:8000/login/", { username, password });
-      setUser(response.data);
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
-  };
+//   const checkLogin = () => {
+//     axios.get('http://127.0.0.1:8000')
+//       .then(response => {
+//         if (response.data) {
+//           setUser(response.data);
+//         } else {
+//           setUser(false);
+//         }
+//       })
+//       .catch(error => {
+//         console.error(error);
+//         setUser(false);
+//       });
+//   };
 
-  const logout = async () => {
-    try {
-      await axios.post("/api/logout/");
-      setUser(null);
-    } catch (error) {
-      console.error("Logout failed:", error);
-    }
-  };
+//   const login = (credentials) => {
+//     axios.post('http://127.0.0.1:8000/login', credentials)
+//       .then(response => {
+//         setUser(response.data);
+//       })
+//       .catch(error => {
+//         console.error(error);
+//         setUser(false);
+//       });
+//   };
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+//   const logout = () => {
+//     axios.post('http://127.0.0.1:8000/logout')
+//       .then(() => {
+//         setUser(false);
+//       })
+//       .catch(error => {
+//         console.error(error);
+//       });
+//   };
 
-const useAuth = () => useContext(AuthContext);
+//   return (
+//     <AuthContext.Provider value={{ user, login, logout }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
 
-export { AuthProvider, useAuth };
+// export default AuthProvider;
+
+
+
+
+
+
+
+
+
+// const AuthProvider = ({ children }) => {
+//   const [user, setUser] = useState(null);
+
+//   useEffect(() => {
+//     checkLogin();
+//   }, []);
+
+//   const checkLogin = () => {
+//     axios.get('http://127.0.0.1:8000')
+//       .then(response => {
+//         if (response.data) {
+//           setUser(response.data);
+//         } else {
+//           setUser(false);
+//         }
+//       })
+//       .catch(error => {
+//         console.error(error);
+//         setUser(false);
+//       });
+//   };
+
+//   const login = (credentials) => {
+//     axios.post('http://127.0.0.1:8000/login', credentials)
+//       .then(response => {
+//         setUser(response.data);
+//       })
+//       .catch(error => {
+//         console.error(error);
+//         setUser(false);
+//       });
+//   };
+
+//   const logout = () => {
+//     axios.post('http://127.0.0.1:8000/logout')
+//       .then(() => {
+//         setUser(false);
+//       })
+//       .catch(error => {
+//         console.error(error);
+//       });
+//   };
+
+//   return (
+//     <AuthContext.Provider value={{ user, login, logout }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
+// export default AuthProvider;

@@ -18,6 +18,8 @@ import os
 
 # import rest_framework 
 # ALLOWED_HOST = ['://192.168.56.1:8000']
+ALLOWED_HOSTS = ['192.168.1.10', 'localhost', '127.0.0.1']
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -205,6 +207,8 @@ JWT_AUTH = {
 PASSWORD_RESET_TIMEOUT=900          # 900 Sec = 15 Min
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8081"
+    "http://localhost:8081",
+    "http://192.168.1.6:8081",
+    "http://127.0.0.1:8081"
 ]
 

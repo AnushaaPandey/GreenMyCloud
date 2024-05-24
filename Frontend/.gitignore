@@ -33,3 +33,9 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# txt
+a.txt
+Articles.txt
+login.txt
+factors.txt

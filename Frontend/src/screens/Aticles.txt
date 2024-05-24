@@ -1,0 +1,328 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, Linking, StyleSheet } from 'react-native';
+
+const Articles = () => {
+  const [articles, setArticles] = useState([]);
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/scrape-articles/');
+      const data = await response.json();
+      setArticles(data);
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+    }
+  };
+
+  const openArticleUrl = (url) => {
+    Linking.openURL(url);
+  };
+
+  const renderArticleItem = ({ item }) => (
+    <TouchableOpacity onPress={() => openArticleUrl(item.url)} style={styles.articleItem}>
+      <Text style={styles.articleTitle}>{item.title}</Text>
+      <Text style={styles.articleSource}>{item.source}</Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={articles}
+        renderItem={renderArticleItem}
+        keyExtractor={(item) => item.title}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  articleItem: {
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    paddingVertical: 10,
+  },
+  articleTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  articleSource: {
+    fontSize: 14,
+    color: '#666',
+  },
+});
+
+export default Articles;
+
+
+
+Dashboard.js:
+
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, TouchableOpacity, Linking, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
+const Dashboard = ({navigation}) => { 
+  const [articles, setArticles] = useState([]);
+
+  useEffect(() => {
+    fetchArticles();
+  }, []);
+
+  const fetchArticles = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/scrape-articles/');
+      const data = await response.json();
+      setArticles(data);
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+    }
+  };
+
+  const openArticleUrl = (url) => {
+    Linking.openURL(url);
+  };
+
+  const renderArticleItem = ({ item }) => (
+    <TouchableOpacity onPress={() => openArticleUrl(item.url)} style={styles.articleItem}>
+      <Text style={styles.articleTitle}>{item.title}</Text>
+      <Text style={styles.articleSource}>{item.source}</Text>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerText}>GreenCloud</Text>
+      </View>
+
+      {/* Main content */}
+      <FlatList
+        data={articles}
+        renderItem={renderArticleItem}
+        keyExtractor={(item) => item.title}
+        style={styles.content}
+      />
+
+      {/* Footer navbar */}
+      <View style={styles.footer}>
+        {/* Add navbar buttons here */}
+        <Text
+          style={styles.navbarButton}
+          onPress={() => navigation.navigate('Home')} // Example navigation action
+        >
+          Home
+        </Text>
+        <Text
+          style={styles.navbarButton}
+          onPress={() => navigation.navigate('CarbonEmissions')} // Example navigation action
+        >
+          Calculate Emissions
+        </Text>
+        <Text
+          style={styles.navbarButton}
+          onPress={() => navigation.navigate('Settings')} // Example navigation action
+        >
+          Settings
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#D6F8D6',
+  },
+  header: {
+    backgroundColor: '#D6F8D6',
+    padding: 15,
+  },
+  headerText: {
+    color: '#000000',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+  },
+  articleItem: {
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    paddingVertical: 10,
+  },
+  articleTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  articleSource: {
+    fontSize: 14,
+    color: '#666',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#0D1321',
+    paddingVertical: 8,
+  },
+  navbarButton: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
+
+export default Dashboard;
+
+
+Apps.js comments:
+// import React from "react";
+// import { View, StyleSheet } from "react-native";
+// import { LogBox } from "react-native";
+// import { ThemeProvider } from "react-native-rapi-ui";
+// import SplashScreen from "./src/screens/splash";
+// import { useEffect, useState } from "react";
+// import HomePage from "./src/screens/HomePage";
+// import AppNavigator  from "./src/navigation/AppNavigator"
+// import LoginScreen from "./src/screens/auth/Login";
+
+// window.React1 = require('react');
+
+// // Add this in your component file
+// require('react-dom');
+// window.React2 = require('react');
+// console.log(window.React1 === window.React2);
+
+// export default function App() {
+//   return(
+//     <AppNavigator />
+//   );
+  
+ 
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//   },
+// });
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useContext } from "react";
+// import { View, StyleSheet } from "react-native";
+// import { ThemeProvider, useTheme } from "react-native-rapi-ui";
+// import { NavigationContainer } from "@react-navigation/native";
+// import { createStackNavigator } from "@react-navigation/stack";
+
+
+// import SplashScreen from "./src/screens/splash";
+// import HomePage from "./src/screens/HomePage";
+// import Dashboard from "./src/screens/Dashboard";
+// import LoginScreen from "./src/screens/auth/Login";
+// import RegisterScreen from "./src/screens/auth/Register";
+// import ForgotPasswordScreen from "./src/screens/auth/ForgotPassword";
+
+
+// const AuthContext = React.createContext();
+
+// const AuthProvider = ({ children }) => {
+//   const [user, setUser] = useState(null); // Change this to `null` if user is not logged in
+//   // Mock login/logout functionality
+//   const login = () => setUser({ name: "User" });
+//   const logout = () => setUser(null);
+  
+//   return (
+//     <AuthContext.Provider value={{ user, login, logout }}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// };
+
+// const AuthStack = createStackNavigator();
+
+// const Auth = () => {
+//   return (
+//     <AuthStack.Navigator
+//       screenOptions={{
+//         headerShown: false,
+//       }}
+//     >
+//       <AuthStack.Screen name="Login" component={LoginScreen} />
+//       <AuthStack.Screen name="Register" component={RegisterScreen} />
+//       <AuthStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+//     </AuthStack.Navigator>
+//   );
+// };
+
+// const MainStack = createStackNavigator();
+
+// const Main = () => {
+//   return (
+//     <MainStack.Navigator
+//       screenOptions={{
+//         headerShown: false,
+//       }}
+//     >
+//       <MainStack.Screen name="Home" component={HomePage} />
+//       <MainStack.Screen name="Dashboard" component={Dashboard} />
+//     </MainStack.Navigator>
+//   );
+// };
+
+// export default function App() {
+//   const [isShowSplashScreen, setIsShowSplashScreen] = useState(true);
+  
+//   useEffect(() => {
+//     setTimeout(() => {
+//       setIsShowSplashScreen(false);
+//     }, 3000);
+//   }, []);
+
+//   return (
+//     <AuthProvider>
+//       <ThemeProvider>
+//         <View style={styles.container}>
+//           {isShowSplashScreen ? (
+//             <SplashScreen />
+//           ) : (
+//             <AppNavigator />
+//           )}
+//         </View>
+//       </ThemeProvider>
+//     </AuthProvider>
+//   );
+// }
+
+// const AppNavigator = () => {
+//   const { user } = useContext(AuthContext);
+
+//   return (
+//     <NavigationContainer>
+//       {user ? <Main /> : <Auth />}
+//     </NavigationContainer>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//   },
+// });

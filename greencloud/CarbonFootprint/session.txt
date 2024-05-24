@@ -237,7 +237,7 @@ def calc(request):
 #     return render(request, 'templates/rest.html')
 
 def elec_api(request):
-   response=request.get('https://preview.api.climatiq.io/travel/v1-preview1/distance').json()
+   response=request.get('http://preview.api.climatiq.io/travel/v1-preview1/distance').json()
    return render (request, 'calc.html', {'response':response})
 
 def api(APIView):
@@ -272,9 +272,9 @@ Carbonfootprint.html code:
  <meta charset="UTF-8">
  <meta name="viewport" content="width=device-width, initial-scale=1.0">
  <title>Login Registration</title>
- <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;700&display=swap" rel="stylesheet">
+ <link rel="preconnect" href="http://fonts.googleapis.com">
+<link rel="preconnect" href="http://fonts.gstatic.com" crossorigin>
+<link href="http://fonts.googleapis.com/css2?family=Mulish:wght@400;700&display=swap" rel="stylesheet">
  {% load static %}
  <link rel="stylesheet" href="{% static "css/style.css" %}">
 </head>

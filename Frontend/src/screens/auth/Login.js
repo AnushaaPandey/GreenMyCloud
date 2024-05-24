@@ -1,52 +1,51 @@
-
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image, Alert, Switch } from 'react-native';
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from 'react-native-rapi-ui';
-import { AuthContext } from "../../Provider/AuthProvider";
-import axios from 'axios';
 
 export default function LoginScreen({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const val = useContext(AuthContext);
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/login/', {
-        username: username,
-        password: password
+      const response = await fetch('http://127.0.0.1:8000/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
       });
-     
-    if (response && response.data) {
-      console.log('Login successful:', response.data);
-      navigation.navigate('Dashboard');
-    } else {
-      console.error('Login failed: Response data is missing');
-      Alert.alert('Login failed', 'An unexpected error occurred');
-    }
-  } catch (error) {
-    if (error.response && error.response.data) {
-      // Server responded with an error message
-      const errorMessage = error.response.data.detail;
-      if (errorMessage.includes('username')) {
-        Alert.alert('Login failed', 'Username does not exist');
-      } else if (errorMessage.includes('password')) {
-        Alert.alert('Login failed', 'Incorrect password');
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Login successful:', data);
+        navigation.navigate('Dashboard');
       } else {
-        Alert.alert('Login failed', errorMessage);
+        console.error('Login failed:', data);
+        Alert.alert('Login failed', 'An unexpected error occurred');
       }
-    } else {
-      // Handle network errors or other unexpected errors
+    } catch (error) {
       console.error('Login error:', error);
       Alert.alert('Login failed', 'An unexpected error occurred');
     }
-  }
-};
+  };
+
   return (
     <KeyboardAvoidingView behavior="height" enabled style={{ flex: 1 }}>
       <Layout>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>         
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end', marginTop: 0 }}>
+            <Switch
+              style={{ marginLeft: 0 }}
+              value={isDarkmode}
+              onValueChange={() => setTheme(isDarkmode ? 'light' : 'dark')}
+            />
+          </View>
           <View
             style={{
               flex: 1,
@@ -79,23 +78,25 @@ export default function LoginScreen({ navigation }) {
             >
               Login
             </Text>
-            <Text>{val}</Text>
+            {/* Displaying user state for debugging, remove in production */}
+            {/* {<Text>Logged in as: {username}</Text>} */}
             <Text>Username</Text>
             <TextInput
-              containerStyle={{ marginTop: 5, marginBottom: 10}}
+              containerStyle={{ marginTop: 5, marginBottom: 10 }}
               placeholder="Enter your username"
               value={username}
               onChangeText={setUsername}
             />
             <Text>Password</Text>
             <TextInput
-              containerStyle={{ marginTop: 5, marginBottom: 10}}
+              containerStyle={{ marginTop: 5, marginBottom: 10 }}
               placeholder="Enter your password"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
             />
-            <Button text='Login'
+            <Button
+              text='Login'
               title="Login"
               onPress={handleLogin}
               style={{ marginTop: 20, backgroundColor: '#080705' }} // Change the background color here
@@ -132,21 +133,9 @@ export default function LoginScreen({ navigation }) {
                 </Text>
               </TouchableOpacity>
             </View>
-                {/* Dark mode and Light mode option */}
-            <View style={{ flexDirection: 'row', alignItems: 'left', justifyContent: 'left', marginTop: 0 }}>
-              {/* <Text>Light Mode</Text> */}
-              <Switch
-                style={{ marginLeft: 0 }}
-                value={isDarkmode}
-                onValueChange={() => setTheme(isDarkmode ? 'light' : 'dark')}
-              />
-              {/* <Text>Dark Mode</Text> */}
-              </View>
-            
           </View>
         </ScrollView>
       </Layout>
     </KeyboardAvoidingView>
   );
 }
-

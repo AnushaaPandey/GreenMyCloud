@@ -26,7 +26,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
-
+from .models import Result
 
 # Generate Token Manually
 def get_tokens_for_user(user):
@@ -151,6 +151,28 @@ def calculate_emissions(request):
             return JsonResponse({'error': str(e)}, status=400)
     else:
         return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
+
+
+def get_results(request):
+    if request.method == 'GET':
+        try:
+            # Retrieve the latest Result object from the database
+            latest_result = Result.objects.latest('id')
+            data = {
+                'transportation_emissions': latest_result.transportation_emissions,
+                'waste_emissions': latest_result.waste_emissions,
+                'electricity_emissions': latest_result.electricity_emissions,
+                'screentime_emissions': latest_result.screentime_emissions,
+                'dietary_emissions': latest_result.dietary_emissions,
+                'total_emissions': latest_result.total_emissions,
+                'average_emissions': latest_result.average_emissions,
+            }
+            return JsonResponse(data)
+        except Result.DoesNotExist:
+            return JsonResponse({'error': 'No results found'}, status=404)
+    else:
+        return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
+
 
 def scrape_articles(request):
     articles = []

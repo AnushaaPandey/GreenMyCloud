@@ -1,20 +1,77 @@
 import React from 'react';
-// import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-// import ProfileScreen from './ProfileScreen';
-// import FAQScreen from './FAQScreen';
-// import PasswordChangeScreen from './PasswordChangeScreen';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 
-// const Tab = createMaterialTopTabNavigator();
+const SettingsScreen = ({ navigation }) => {
+  const settingsOptions = [
+    { id: '1', title: 'User Profile' },
+    { id: '2', title: 'FAQ' },
+    { id: '3', title: 'Change Password' },
+  ];
 
-const Setting = () => {
+  const renderSettingItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => handleSettingPress(item)}
+      style={styles.settingItem}
+    >
+      <Text style={styles.settingTitle}>{item.title}</Text>
+    </TouchableOpacity>
+  );
+
+  const handleSettingPress = (item) => {
+    switch (item.id) {
+      case '1':
+        // Navigate to user profile screen
+        navigation.navigate('UserProfile');
+        break;
+      case '2':
+        // Navigate to FAQ screen
+        navigation.navigate('FAQ');
+        break;
+      case '3':
+        // Navigate to change password screen
+        navigation.navigate('ChangePassword');
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-      <Tab.Screen name="FAQ" component={FAQScreen} />
-      <Tab.Screen name="Password Change" component={PasswordChangeScreen} />
-    </Tab.Navigator>
+    <View style={styles.container}>
+      <Text style={styles.title}>Settings</Text>
+      <FlatList
+        data={settingsOptions}
+        renderItem={renderSettingItem}
+        keyExtractor={(item) => item.id}
+        style={styles.list}
+      />
+    </View>
   );
 };
 
-export default Setting;
- 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  list: {
+    flex: 1,
+  },
+  settingItem: {
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    paddingVertical: 15,
+  },
+  settingTitle: {
+    fontSize: 18,
+  },
+});
+
+export default SettingsScreen;

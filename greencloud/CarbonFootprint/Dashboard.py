@@ -9,7 +9,7 @@ def scrape_articles(request):
     newspapers = [
         {
             "name": "cityam",
-            "address": "https://www.cityam.com/london-must-become-a-world-leader-on-climate-change-action/",
+            "address": "http://www.cityam.com/london-must-become-a-world-leader-on-climate-change-action/",
             "base": ""
         },
         # Add other newspaper entries here
