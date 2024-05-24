@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { ThemeProvider } from "react-native-rapi-ui";
 import SplashScreen from "./src/screens/splash";
-import FAQScreen from './src/screens/FAQ/FAQScreen';
+import AppNavigator from './src/navigation/AppNavigator';
 
 
 const App = () => {
@@ -19,7 +19,7 @@ const App = () => {
       <ThemeProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
           {isShowSplashScreen ? <SplashScreen /> :
-          <FAQScreen />
+          <AppNavigator />
   }
         </GestureHandlerRootView>
       </ThemeProvider>
