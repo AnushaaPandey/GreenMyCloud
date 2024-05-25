@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const UserProfileScreen = () => {
+const UserProfile = () => {
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchUserProfile();
@@ -11,33 +14,67 @@ const UserProfileScreen = () => {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await axios.get('http://your-backend-url.com/api/user-profile/');
+      const token = await AsyncStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('No auth token found');
+      }
+
+      const response = await axios.get('http://10.0.2.2:8000/profile/', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
       
       if (response.status === 200) {
         setUserData(response.data);
+      } else {
+        throw new Error('Failed to fetch user profile');
       }
     } catch (error) {
       console.error('Error fetching user profile:', error);
-      Alert.alert('Error', 'Failed to fetch user profile. Please try again later.');
+      setError('Failed to fetch user profile. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>User Profile</Text>
-      {userData && (
+      {userData ? (
         <View style={styles.profileContainer}>
           <Text style={styles.label}>Name:</Text>
           <Text style={styles.value}>{userData.name}</Text>
+
+          <Text style={styles.label}>Last Name:</Text>
+          <Text style={styles.value}>{userData.lastname}</Text>
           
           <Text style={styles.label}>Email:</Text>
           <Text style={styles.value}>{userData.email}</Text>
           
-          <Text style={styles.label}>Age:</Text>
-          <Text style={styles.value}>{userData.age}</Text>
+          <Text style={styles.label}>Username:</Text>
+          <Text style={styles.value}>{userData.username}</Text>
           
           {/* Add other user profile fields here */}
         </View>
+      ) : (
+        <Text>No user data available.</Text>
       )}
     </View>
   );
@@ -67,6 +104,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 18,
+    color: 'red',
+    textAlign: 'center',
+  },
 });
 
-export default UserProfileScreen;
+export default UserProfile;

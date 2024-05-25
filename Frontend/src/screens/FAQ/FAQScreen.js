@@ -5,7 +5,6 @@ import { AntDesign } from '@expo/vector-icons';
 const FAQScreen = () => {
   const [expandedAnswerId, setExpandedAnswerId] = useState(null);
 
-  // Dummy data for FAQ questions and answers
   const faqData = [
     {
       id: '1',

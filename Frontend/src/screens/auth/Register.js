@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image, Alert, Switch } from "react-native";
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from "react-native-rapi-ui";
+import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the eye icon
 import axios from 'axios'; // Import Axios for making HTTP requests
 
 export default function RegisterScreen({ navigation }) {
@@ -12,6 +13,8 @@ export default function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // State to track password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State to track confirm password visibility
 
   const register = async () => {
     if (!email || !name || !lastName || !username || !password || !confirmPassword) {
@@ -25,19 +28,24 @@ export default function RegisterScreen({ navigation }) {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://127.0.0.1:8000/register/', {
+      const response = await axios.post('http://10.0.2.2:8000/register/', {
         email: email,
         name: name,
-        last_name: lastName, // Adjust the key name to match your backend serializer
+        lastname: lastName,
         username: username,
-        password: password
+        password: password,
+        password2: confirmPassword
       });
       console.log("Registration successful:", response.data);
       Alert.alert("Success", "Registration successful. Please log in.");
       navigation.navigate("Login");
     } catch (error) {
       console.error("Registration failed:", error.response ? error.response.data : error.message);
-      Alert.alert("Error", error.response ? error.response.data.msg : "An unexpected error occurred");
+      if (error.response && error.response.data) {
+        Alert.alert("Error", Object.values(error.response.data).join("\n"));
+      } else {
+        Alert.alert("Error", "An unexpected error occurred");
+      }
     } finally {
       setLoading(false);
     }
@@ -112,21 +120,37 @@ export default function RegisterScreen({ navigation }) {
               onChangeText={(text) => setUsername(text)}
             />
             <Text>Password</Text>
-            <TextInput
-              containerStyle={{ marginBottom: 5, marginTop: 5 }}
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              secureTextEntry
-            />
+            <View style={{ flexDirection: 'row' }}>
+              <TextInput
+                containerStyle={{ flex: 1, marginBottom: 5, marginTop: 5 }}
+                placeholder="Enter your password"
+                value={password}
+                onChangeText={(text) => setPassword(text)}
+                secureTextEntry={!showPassword} // Toggle secureTextEntry based on showPassword state
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)} // Toggle showPassword state
+                style={{ marginLeft: 10, marginTop: 12 }}
+              >
+                <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={20} color="black" />
+                </TouchableOpacity>
+            </View>
             <Text>Confirm Password</Text>
-            <TextInput
-              containerStyle={{ marginBottom: 5, marginTop: 5 }}
-              placeholder="Confirm your password"
-              value={confirmPassword}
-              onChangeText={(text) => setConfirmPassword(text)}
-              secureTextEntry
-            />
+            <View style={{ flexDirection: 'row' }}>
+              <TextInput
+                containerStyle={{ flex: 1, marginBottom: 5, marginTop: 5 }}
+                placeholder="Confirm your password"
+                value={confirmPassword}
+                onChangeText={(text) => setConfirmPassword(text)}
+                secureTextEntry={!showConfirmPassword} // Toggle secureTextEntry based on showConfirmPassword state
+              />
+              <TouchableOpacity
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)} // Toggle showConfirmPassword state
+                style={{ marginLeft: 10, marginTop: 12 }}
+              >
+                <Ionicons name={showConfirmPassword ? 'eye-off' : 'eye'} size={20} color="black" />
+              </TouchableOpacity>
+            </View>
             <Button
               text={loading ? "Loading..." : "Create an account"}
               onPress={register}

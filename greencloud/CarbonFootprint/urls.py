@@ -1,7 +1,7 @@
 
 from django.urls import path 
-from .views import UserRegistrationView, UserLoginView, UserProfileView, UserChangePasswordView, SendPasswordResetEmailView, UserPasswordResetView
-from .views import scrape_articles, get_csrf_token, calculate_emissions
+from .views import UserRegistrationView, UserLoginView, UserProfileView, UserChangePasswordView, SendPasswordResetEmailView, UserPasswordResetView, get_results
+from .views import scrape_articles, get_csrf_token, calculate_emissions, logout_user
 
 
 urlpatterns = [
@@ -14,6 +14,8 @@ urlpatterns = [
     path('calculate_emission/', calculate_emissions, name="calculate_emissions"),
     path('scrape-articles/', scrape_articles, name='scrape_articles'),
     path('api/csrf/', get_csrf_token, name='get_csrf_token'),
+    path('logout/', logout_user, name='logout'),
+    path('results/', get_results, name="results")
 
   
   

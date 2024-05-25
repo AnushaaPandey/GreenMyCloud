@@ -745,3 +745,10 @@ def data(request):
 
 
 
+Serailizer:
+  # def create(self, validate_data):
+  #   username = validate_data.pop('username', None)
+  #   if not username:
+  #           raise serializers.ValidationError("Username is required")
+
+  #   return User.objects.create_user(**validate_data)

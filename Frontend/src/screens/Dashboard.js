@@ -1,70 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Linking, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, FlatList, TouchableOpacity, Linking, ActivityIndicator, StyleSheet } from 'react-native';
+import axios from 'axios';
 
-const Dashboard = () => { 
-  const navigation = useNavigation();
-  const [articles, setArticles] = useState([]);
+function Dashboard() {
+    const [articles, setArticles] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchArticles();
-  }, []);
+    useEffect(() => {
+        const fetchArticles = async () => {
+            try {
+                const response = await axios.get('http://10.0.2.2:8000/scrape-articles/');
+                const uniqueArticles = removeDuplicates(response.data, 'url');
+                setArticles(uniqueArticles);
+            } catch (error) {
+                console.error('Error fetching articles:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-  const fetchArticles = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:8000/scrape-articles/');
-      const data = await response.json();
-      setArticles(data);
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-    }
-  };
+        fetchArticles();
+    }, []);
 
-  const openArticleDetail = (article) => {
-    navigation.navigate('ArticleDetail', { article });
-  };
+    const removeDuplicates = (arr, prop) => {
+        return arr.filter((obj, index, self) =>
+            index === self.findIndex((o) => o[prop] === obj[prop])
+        );
+    };
 
-  const renderArticleItem = ({ item }) => (
-    <TouchableOpacity onPress={() => openArticleDetail(item)} style={styles.articleItem}>
-      <Text style={styles.articleTitle}>{item.title}</Text>
-      <Text style={styles.articleSource}>{item.source}</Text>
-    </TouchableOpacity>
-  );
+    const openArticleDetail = (url) => {
+        Linking.openURL(url);
+    };
 
-  return (
-    <View style={styles.container}>
-      <FlatList
-        data={articles}
-        renderItem={renderArticleItem}
-        keyExtractor={(item) => item.title}
-        style={styles.content}
-      />
-    </View>
-  );
-};
+    const renderArticleItem = ({ item }) => (
+        <TouchableOpacity onPress={() => openArticleDetail(item.url)} style={styles.articleItem}>
+            <Text style={styles.articleTitle}>{item.title}</Text>
+            <Text style={styles.articleSource}>{item.source}</Text>
+        </TouchableOpacity>
+    );
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.heading}>Previous Articles</Text>
+            {loading ? (
+                <ActivityIndicator size="large" color="#000000" />
+            ) : (
+                <FlatList
+                    data={articles}
+                    renderItem={renderArticleItem}
+                    keyExtractor={(item) => item.url}
+                />
+            )}
+        </View>
+    );
+  }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#D6F8D6',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  articleItem: {
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
-    paddingVertical: 10,
-  },
-  articleTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  articleSource: {
-    fontSize: 14,
-    color: '#666',
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        padding: 20,
+    },
+    heading: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 20,
+    },
+    articleItem: {
+        borderBottomWidth: 1,
+        borderColor: '#ccc',
+        paddingVertical: 10,
+    },
+    articleTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    articleSource: {
+        fontSize: 14,
+        color: '#666',
+    },
 });
 
 export default Dashboard;

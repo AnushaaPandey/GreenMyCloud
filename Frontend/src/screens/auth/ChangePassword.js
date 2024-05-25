@@ -20,7 +20,7 @@ const ChangePasswordScreen = () => {
 
     try {
       const response = await axios.post(
-        'http://your-backend-url.com/api/change-password/',
+        'http://10.0.2.2:8000/changepassword/',
         { old_password: oldPassword, new_password: newPassword }
       );
       

@@ -11,7 +11,7 @@
 //   }, []);
 
 //   const checkLogin = () => {
-//     axios.get('http://127.0.0.1:8000')
+//     axios.get('http://10.0.2.2:8000')
 //       .then(response => {
 //         if (response.data) {
 //           setUser(response.data);
@@ -26,7 +26,7 @@
 //   };
 
 //   const login = (credentials) => {
-//     axios.post('http://127.0.0.1:8000/login', credentials)
+//     axios.post('http://10.0.2.2:8000/login', credentials)
 //       .then(response => {
 //         setUser(response.data);
 //       })
@@ -37,7 +37,7 @@
 //   };
 
 //   const logout = () => {
-//     axios.post('http://127.0.0.1:8000/logout')
+//     axios.post('http://10.0.2.2:8000/logout')
 //       .then(() => {
 //         setUser(false);
 //       })
@@ -71,7 +71,7 @@
 //   }, []);
 
 //   const checkLogin = () => {
-//     axios.get('http://127.0.0.1:8000')
+//     axios.get('http://10.0.2.2:8000')
 //       .then(response => {
 //         if (response.data) {
 //           setUser(response.data);
@@ -86,7 +86,7 @@
 //   };
 
 //   const login = (credentials) => {
-//     axios.post('http://127.0.0.1:8000/login', credentials)
+//     axios.post('http://10.0.2.2:8000/login', credentials)
 //       .then(response => {
 //         setUser(response.data);
 //       })
@@ -97,7 +97,7 @@
 //   };
 
 //   const logout = () => {
-//     axios.post('http://127.0.0.1:8000/logout')
+//     axios.post('http://10.0.2.2:8000/logout')
 //       .then(() => {
 //         setUser(false);
 //       })

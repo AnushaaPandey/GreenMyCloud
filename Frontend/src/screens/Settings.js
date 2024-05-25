@@ -1,11 +1,14 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import axios from 'axios';
+import { Ionicons } from '@expo/vector-icons';
 
 const SettingsScreen = ({ navigation }) => {
   const settingsOptions = [
-    { id: '1', title: 'User Profile' },
-    { id: '2', title: 'FAQ' },
-    { id: '3', title: 'Change Password' },
+    { id: '1', title: 'User Profile', icon: 'person' },
+    { id: '2', title: 'FAQ', icon: 'help-circle' },
+    { id: '3', title: 'Change Password', icon: 'key' },
+    { id: '4', title: 'Logout', icon: 'log-out' },
   ];
 
   const renderSettingItem = ({ item }) => (
@@ -13,6 +16,7 @@ const SettingsScreen = ({ navigation }) => {
       onPress={() => handleSettingPress(item)}
       style={styles.settingItem}
     >
+      <Ionicons name={item.icon} size={24} color="black" style={styles.icon} />
       <Text style={styles.settingTitle}>{item.title}</Text>
     </TouchableOpacity>
   );
@@ -20,25 +24,36 @@ const SettingsScreen = ({ navigation }) => {
   const handleSettingPress = (item) => {
     switch (item.id) {
       case '1':
-        // Navigate to user profile screen
         navigation.navigate('UserProfile');
         break;
       case '2':
-        // Navigate to FAQ screen
-        navigation.navigate('FAQ');
+        navigation.navigate('FAQScreen');
         break;
       case '3':
-        // Navigate to change password screen
-        navigation.navigate('ChangePassword');
+        navigation.navigate('ChangePasswordScreen');
+        break;
+      case '4':
+        handleLogout();
         break;
       default:
         break;
     }
   };
 
+  const handleLogout = async () => {
+    try {
+      await axios.post('http://10.0.2.2:8000/logout/');
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Login' }],
+      });
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Settings</Text>
       <FlatList
         data={settingsOptions}
         renderItem={renderSettingItem}
@@ -56,18 +71,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 20,
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
   list: {
     flex: 1,
   },
   settingItem: {
-    borderBottomWidth: 1,
-    borderColor: '#ccc',
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 15,
+    // borderBottomWidth: 1,
+    // borderColor: '#ccc',
+  },
+  icon: {
+    marginRight: 15,
   },
   settingTitle: {
     fontSize: 18,

@@ -1,37 +1,42 @@
 import React, { useState } from 'react';
 import { ScrollView, TouchableOpacity, View, KeyboardAvoidingView, Image, Alert, Switch } from 'react-native';
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from 'react-native-rapi-ui';
+import { Ionicons } from '@expo/vector-icons'; // Import Ionicons for the eye icon
+import axios from 'axios';
 
 export default function LoginScreen({ navigation }) {
   const { isDarkmode, setTheme } = useTheme();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // State to track password visibility
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/login/', {
-        method: 'POST',
+      const response = await axios.post('http://10.0.2.2:8000/login/', {
+        username: username,
+        password: password,
+      }, {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log('Login successful:', data);
-        navigation.navigate('Dashboard');
+      if (response.headers['content-type'].includes('application/json')) {
+        const data = response.data;
+        if (response.status === 200) {
+          navigation.navigate('Dashboard');
+        } else {
+          Alert.alert('Login failed', data.message || 'An unexpected error occurred');
+        }
       } else {
-        console.error('Login failed:', data);
-        Alert.alert('Login failed', 'An unexpected error occurred');
+        Alert.alert('Error', 'An unexpected error occurred. Please try again.');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      Alert.alert('Login failed', 'An unexpected error occurred');
+      if (error.response && error.response.data.errors) {
+        Alert.alert('Login failed', error.response.data.errors.non_field_errors[0]);
+      } else {
+        Alert.alert('Login failed', 'An unexpected error occurred');
+      }
     }
   };
 
@@ -56,10 +61,7 @@ export default function LoginScreen({ navigation }) {
           >
             <Image
               resizeMode="contain"
-              style={{
-                height: 225,
-                width: 225,
-              }}
+              style={{ height: 225, width: 225 }}
               source={require('../../../assets/Images/login.png')}
             />
           </View>
@@ -78,32 +80,36 @@ export default function LoginScreen({ navigation }) {
             >
               Login
             </Text>
-            {/* Displaying user state for debugging, remove in production */}
-            {/* {<Text>Logged in as: {username}</Text>} */}
             <Text>Username</Text>
             <TextInput
-              containerStyle={{ marginTop: 5, marginBottom: 10 }}
+              containerStyle={{ marginTop: 5, marginBottom: 10, paddingHorizontal:20 }}
               placeholder="Enter your username"
               value={username}
               onChangeText={setUsername}
             />
             <Text>Password</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <TextInput
-              containerStyle={{ marginTop: 5, marginBottom: 10 }}
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
+                containerStyle={{ flex: 1 }}
+                placeholder={showPassword ? "Enter your password" : "Enter your password"}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword} // Toggle secureTextEntry based on showPassword state
+              />
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)} // Toggle showPassword state
+                style={{ padding: 10 }}
+              >
+                <Ionicons name={showPassword ? 'eye-off' : 'eye'} size={15} color="black" />
+              </TouchableOpacity>
+            </View>
             <Button
-              text='Login'
-              title="Login"
+              text="Login"
               onPress={handleLogin}
-              style={{ marginTop: 20, backgroundColor: '#080705' }} // Change the background color here
+              style={{ marginTop: 20, backgroundColor: '#007bff' }}
             />
             <TouchableOpacity
               onPress={() => {
-                // Navigate to the forgot password page
                 navigation.navigate('ForgotPassword');
               }}
             >
@@ -120,7 +126,6 @@ export default function LoginScreen({ navigation }) {
               <Text size="md">Don't have an account?</Text>
               <TouchableOpacity
                 onPress={() => {
-                  // Navigate to the register page
                   navigation.navigate('Register');
                 }}
               >

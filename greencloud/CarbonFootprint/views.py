@@ -1,9 +1,10 @@
-
+from django.contrib.auth.models import AnonymousUser 
 import json
 import uuid
 from django.shortcuts import render, redirect 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponse
@@ -27,6 +28,8 @@ from rest_framework.permissions import IsAuthenticated
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
 from .models import Result
+from django.utils import timezone
+
 
 # Generate Token Manually
 def get_tokens_for_user(user):
@@ -93,36 +96,9 @@ class UserPasswordResetView(APIView):
 
   
 @login_required(login_url="login")
-# def user_logout(request):
-#         auth.logout(request)
-#         return redirect(request, 'my-login.html')
+
 def dashboard(request):
    return JsonResponse(dashboard)
-
-# def calculate_emissions(request):
-#     if request.method == 'POST':
-#         # Get input data from the POST request
-#         transportation_mode = request.POST.get('transportation_mode')
-#         transportation_distance = float(request.POST.get('transportation_distance'))
-#         waste_weight_kg = float(request.POST.get('waste_weight_kg'))
-#         electricity_kWh = float(request.POST.get('electricity_kWh'))
-#         screentime_hours = float(request.POST.get('screentime_hours'))
-#         dietary_meals = float(request.POST.get('dietary_meals'))
-        
-#         # Calculate emissions and save data into the database
-#         result = calculate_total_and_average_emissions(
-#             CLIMATIQ_API_KEY,
-#             transportation_mode,
-#             transportation_distance,
-#             waste_weight_kg,
-#             electricity_kWh,
-#             screentime_hours,
-#             dietary_meals,
-#             request
-#         )
-        
-#         # Return JSON response with the emissions data
-#         return JsonResponse(result)
 
 @csrf_exempt  # Temporarily exempt from CSRF for testing; remove in production
 def calculate_emissions(request):
@@ -211,6 +187,21 @@ def scrape_articles(request):
     
     # Return the scraped articles as JSON response
     return JsonResponse(articles, safe=False)
+
+
+@api_view(['POST'])
+def logout_user(request):
+    if not isinstance(request.user, AnonymousUser):  # Check if user is authenticated
+        # Update last_login field in the database
+        request.user.last_login = timezone.now()
+        request.user.save()
+        
+        # Logout the user
+        logout(request)
+        
+        return Response({'message': 'Logout successful'})
+    else:
+        return Response({'message': 'User is not authenticated'})
   
 
 def get_csrf_token(request):

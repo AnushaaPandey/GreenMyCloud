@@ -19,11 +19,11 @@ def transportation(CLIMATIQ_API_KEY, mode, distance, request):
         "diesel_car": "c3f31da2-29f2-48c6-a5ac-9a9f53e7f81f",
         "petrol_car": "40ebe027-a9dd-4513-a286-7eaadb5b16ef",
         "bus": "dd20350e-1a2d-49d9-ae18-f1e9ab78b34d",
-        "walk": "0.14"
+        "taxi": "4ed7099b-2101-4d14-a149-201baa97ce15"
     }
     
     if mode not in emission_factor_ids:
-        raise ValueError("Invalid transportation mode. Choose from 'motorbike', 'ev_car', 'car', 'diesel_car', 'petrol_car', 'walk' or 'bus'.")
+        raise ValueError("Invalid transportation mode. Choose from 'motorbike', 'ev_car', 'car', 'diesel_car', 'petrol_car', 'taxi' or 'bus'.")
     
     emission_factor_id = emission_factor_ids[mode]
 
@@ -111,11 +111,11 @@ def calculate_total_and_average_emissions(CLIMATIQ_API_KEY, transportation_mode,
     dietary_emissions = dietary_emission(dietary_meals)
 
     total_emissions = (
-        transportation_emissions['co2e'] + 
-        waste_emissions['co2e'] + 
-        electricity_emissions['co2e'] + 
-        screentime_emissions + 
-        dietary_emissions
+        transportation_emissions['co2e'] * 365 + 
+        waste_emissions['co2e'] * 106 + 
+        electricity_emissions['co2e']  * 12 + 
+        screentime_emissions * 365 + 
+        dietary_emissions * 365
     )
 
     total_count = 5

@@ -5,10 +5,13 @@ from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeErr
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from .utils import Util
+from django.core.validators import MinLengthValidator
+from django.core.validators import RegexValidator
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
   #  confirm password field in our Registratin Request
   password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
+  
   class Meta:
     model = User
     fields=['email', 'name', 'lastname', 'username', 'password', 'password2']
@@ -22,14 +25,44 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password2 = attrs.get('password2')
     if password != password2:
       raise serializers.ValidationError("Password and Confirm Password doesn't match")
+    self.validate_password_strength(password)
+        
+    name = attrs.get('name')
+    lastname = attrs.get('lastname')
+        
+    if not name[0].isupper():
+      raise serializers.ValidationError("Name must start with an uppercase letter")
+        
+    if not lastname[0].isupper():
+      raise serializers.ValidationError("Last Name must start with an uppercase letter")
+    
     return attrs
+  def create(self, validated_data):
+        validated_data.pop('password2')
+        return User.objects.create_user(**validated_data)
 
-  def create(self, validate_data):
-    # username = validate_data.pop('username', None)
-    # if not username:
-    #         raise serializers.ValidationError("Username is required")
+  def validate_password_strength(self, password):
+        validators = [
+            MinLengthValidator(8),
+            RegexValidator(
+                regex=r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\W_]).+$',
+                message='Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.'
+            )
+        ]
+        for validator in validators:
+            validator(password)
+  def create(self, validated_data):
+    username = validated_data.get('username')
+    lastname = validated_data.get('lastname')
+    
+    if not username:
+        raise serializers.ValidationError("Username is required")
+    if not lastname:
+        raise serializers.ValidationError("Lastname is required")
 
-    return User.objects.create_user(**validate_data)
+    password = validated_data.pop('password')
+    return User.objects.create_user(password=password, **validated_data)
+
 
 class UserLoginSerializer(serializers.ModelSerializer):
   username = serializers.CharField(max_length=128)

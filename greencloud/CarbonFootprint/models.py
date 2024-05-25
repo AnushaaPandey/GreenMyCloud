@@ -2,7 +2,8 @@
 from django.utils import timezone 
 from django.db import models
 from django.contrib.auth.models import BaseUserManager,AbstractBaseUser, PermissionsMixin
-
+from django.core.validators import RegexValidator, MinLengthValidator
+from django.core.exceptions import ValidationError
 
 class UserManager(BaseUserManager):
   def create_user(self, email, name, lastname,  username,  password=None, password2=None):
@@ -14,9 +15,9 @@ class UserManager(BaseUserManager):
 
       user = self.model(
           email=self.normalize_email(email),
-          name=name,
+          name=name.capitalize(),
           username=username, 
-          lastname = lastname,
+          lastname = lastname.capitalize(),
       )
 
       user.set_password(password)
@@ -53,6 +54,8 @@ class User(AbstractBaseUser):
   is_admin = models.BooleanField(default=False)
   created_at = models.DateTimeField(default=timezone.now)
   updated_at = models.DateTimeField (default=timezone.now)
+  last_login = models.DateTimeField (default=timezone.now)
+
 
   objects = UserManager()
 
@@ -61,6 +64,22 @@ class User(AbstractBaseUser):
 
   def __str__(self):
       return self.username
+
+  def clean(self):
+        self.name = self.name.capitalize()
+        self.lastname = self.lastname.capitalize()
+        self.validate_password(self.password)
+
+  def validate_password(self, password):
+        validators = [
+            MinLengthValidator(8),
+            RegexValidator(
+                regex=r'^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[\W_]).+$',
+                message='Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character.'
+            )
+        ]
+        for validator in validators:
+            validator(password)
 
   def has_perm(self, perm, obj=None):
       "Does the user have a specific permission?"
