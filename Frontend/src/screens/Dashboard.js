@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Linking, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Linking, ActivityIndicator, StyleSheet, Dimensions, ScrollView, Alert } from 'react-native';
 import axios from 'axios';
+
+const { width } = Dimensions.get('window');
 
 function Dashboard() {
     const [articles, setArticles] = useState([]);
@@ -13,7 +15,7 @@ function Dashboard() {
                 const uniqueArticles = removeDuplicates(response.data, 'url');
                 setArticles(uniqueArticles);
             } catch (error) {
-                console.error('Error fetching articles:', error);
+                Alert.alert('Unexpected Error:', error.response?.data?.errors?.non_field_errors?.[0] || 'Error fetching articles');
             } finally {
                 setLoading(false);
             }
@@ -40,44 +42,59 @@ function Dashboard() {
     );
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.heading}>Previous Articles</Text>
+        <ScrollView style={styles.container}>
             {loading ? (
                 <ActivityIndicator size="large" color="#000000" />
             ) : (
-                <FlatList
-                    data={articles}
-                    renderItem={renderArticleItem}
-                    keyExtractor={(item) => item.url}
-                />
+                <>
+                    <View style={styles.welcomeContainer}>
+                    <Text style={styles.subHeading}>Previous Articles</Text>
+                        {/* <Text style={styles.welcomeMessage}>Welcome, Check your carbon emissions now!!</Text> */}
+                    </View>
+                   
+                    <FlatList
+                        data={articles}
+                        renderItem={renderArticleItem}
+                        keyExtractor={(item) => item.url}
+                    />
+                </>
             )}
-        </View>
+        </ScrollView>
     );
-  }
+}
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#f0f4f8',
         padding: 20,
     },
-    heading: {
-        fontSize: 24,
+    // welcomeContainer: {
+    //     alignItems: 'center',
+    //     marginVertical: 20,
+    // },
+    // welcomeMessage: {
+    //     fontSize: 20,
+    //     color: '#333',
+    //     textAlign: 'center',
+    // },
+    subHeading: {
+        fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 20,
+        marginVertical: 10,
+        color: '#555',
     },
     articleItem: {
-        borderBottomWidth: 1,
-        borderColor: '#ccc',
         paddingVertical: 10,
     },
     articleTitle: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
+        color: '#000',
     },
     articleSource: {
         fontSize: 14,
-        color: '#666',
+        color: '#555',
     },
 });
 

@@ -157,6 +157,8 @@ def scrape_articles(request):
     newspapers = [
         {"name": "cityam", "address": "https://www.cityam.com/london-must-become-a-world-leader-on-climate-change-action/"},
         {"name": "thetimes", "address": "https://www.thetimes.co.uk/environment/climate-change"},
+        {"name": "bbc","address": "https://www.bbc.com/news/topics/cmj34zmwm1zt",},
+        {"name": "national_geographic","address": "https://www.nationalgeographic.com/environment/",}
         # Add more newspapers here...
     ]
     
@@ -188,7 +190,28 @@ def scrape_articles(request):
     # Return the scraped articles as JSON response
     return JsonResponse(articles, safe=False)
 
-
+@csrf_exempt
+def verify_payment(request):
+    url = "https://khalti.com/api/v2/payment/verify/"
+    token = request.POST.get('token')
+    amount = int(float(request.POST.get('amount')) *100)
+    # amount = 10
+    print("token",token)
+    payload ={
+        "token":token,
+        "amount":amount
+    }
+    headers ={
+        "Authorization": "key test_secret_key_ea5cd15137fc40b18b02b35ab9675315",
+        # 'Content-Type': 'application/json',
+    }
+    response = requests.post(url,payload,headers=headers)
+    print(response.text)
+    if response.status_code == 200:
+        return JsonResponse({'success':True, 'message': 'Aee Bhayoooo!!'})
+    else:
+         return JsonResponse({'success':False, 'message': 'Aee NBayenaaaaa!!'})
+        
 @api_view(['POST'])
 def logout_user(request):
     if not isinstance(request.user, AnonymousUser):  # Check if user is authenticated

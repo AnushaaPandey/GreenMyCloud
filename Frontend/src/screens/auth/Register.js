@@ -40,9 +40,9 @@ export default function RegisterScreen({ navigation }) {
       Alert.alert("Success", "Registration successful. Please log in.");
       navigation.navigate("Login");
     } catch (error) {
-      console.error("Registration failed:", error.response ? error.response.data : error.message);
+      // console.error("Registration failed:", error.response ? error.response.data : error.message);
       if (error.response && error.response.data) {
-        Alert.alert("Error", Object.values(error.response.data).join("\n"));
+        Alert.alert("Error", "The Name and LastName starts with UpperCase. Make sure Password has atleast 8 characters and contains a numeric, special character and UpperCase.");
       } else {
         Alert.alert("Error", "An unexpected error occurred");
       }

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ScrollView, View, KeyboardAvoidingView, Alert, Switch } from 'react-native';
 import { Layout, Text, TextInput, Button, useTheme, themeColor } from 'react-native-rapi-ui';
 import axios from 'axios';
-import { Picker } from '@react-native-picker/picker';
+import { FontAwesome5 } from '@expo/vector-icons'; // Importing FontAwesome5 from Expo vector icons
 
 export default function CalculateEmissionsScreen({ navigation }) {
     const { isDarkmode, setTheme } = useTheme();
@@ -66,54 +66,77 @@ export default function CalculateEmissionsScreen({ navigation }) {
                         }}
                     >
                         <Text>Transportation Mode</Text>
-                        <TextInput
-                            containerStyle={{ marginBottom: 5, marginTop: 10,}}
-                            placeholder="motorbike,car,bus,taxi,ev_car, diesel_car,petrol_car"
-                            keyboardType="text"
-                            value={transportationMode}
-                            onChangeText={(text) => setTransportationMode(text)}
-                        />
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <FontAwesome5 name="car" size={20} color="#666" style={{ marginRight: 10 }} />
+                            <TextInput
+                                containerStyle={{ marginBottom: 5, marginTop: 10,}}
+                                placeholder="motorbike,car,bus,taxi,ev_car, diesel_car,petrol_car"
+                                keyboardType="text"
+                                value={transportationMode}
+                                onChangeText={(text) => setTransportationMode(text)}
+                            />
+                        </View>
                         
                         <Text>Transportation Distance (km)</Text>
-                        <TextInput
-                            containerStyle={{ marginBottom: 5, marginTop: 10 }}
-                            placeholder="Enter distance in km"
-                            keyboardType="numeric"
-                            value={transportationDistance}
-                            onChangeText={(text) => setTransportationDistance(text)}
-                        />
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <FontAwesome5 name="road" size={20} color="#666" style={{ marginRight: 10 }} />
+                            <TextInput
+                                containerStyle={{ marginBottom: 5, marginTop: 10 }}
+                                placeholder="Enter distance in km"
+                                keyboardType="numeric"
+                                value={transportationDistance}
+                                onChangeText={(text) => setTransportationDistance(text)}
+                            />
+                        </View>
+                        
                         <Text>Waste Weight (kg)</Text>
-                        <TextInput
-                            containerStyle={{ marginBottom: 5, marginTop: 10 }}
-                            placeholder="Enter weight in kg"
-                            keyboardType="numeric"
-                            value={wasteWeight}
-                            onChangeText={(text) => setWasteWeight(text)}
-                        />
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <FontAwesome5 name="trash" size={20} color="#666" style={{ marginRight: 10 }} />
+                            <TextInput
+                                containerStyle={{ marginBottom: 5, marginTop: 10 }}
+                                placeholder="Enter weight in kg"
+                                keyboardType="numeric"
+                                value={wasteWeight}
+                                onChangeText={(text) => setWasteWeight(text)}
+                            />
+                        </View>
+                        
                         <Text>Electricity Usage (Wh)</Text>
-                        <TextInput
-                            containerStyle={{ marginBottom: 5, marginTop: 10 }}
-                            placeholder="Enter electricity usage in Wh"
-                            keyboardType="numeric"
-                            value={electricityUsage}
-                            onChangeText={(text) => setElectricityUsage(text)}
-                        />
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <FontAwesome5 name="bolt" size={20} color="#666" style={{ marginRight: 10 }} />
+                            <TextInput
+                                containerStyle={{ marginBottom: 5, marginTop: 10 }}
+                                placeholder="Enter electricity usage in Wh"
+                                keyboardType="numeric"
+                                value={electricityUsage}
+                                onChangeText={(text) => setElectricityUsage(text)}
+                            />
+                        </View>
+                        
                         <Text>Screentime Hours</Text>
-                        <TextInput
-                            containerStyle={{ marginBottom: 5, marginTop: 10 }}
-                            placeholder="Enter screentime per day"
-                            keyboardType="numeric"
-                            value={screentimeHours}
-                            onChangeText={(text) => setScreentimeHours(text)}
-                        />
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <FontAwesome5 name="mobile" size={20} color="#666" style={{ marginRight: 10 }} />
+                            <TextInput
+                                containerStyle={{ marginBottom: 5, marginTop: 10 }}
+                                placeholder="Enter screentime per day"
+                                keyboardType="numeric"
+                                value={screentimeHours}
+                                onChangeText={(text) => setScreentimeHours(text)}
+                            />
+                        </View>
+                        
                         <Text>Dietary Meals</Text>
-                        <TextInput
-                            containerStyle={{ marginBottom: 5, marginTop: 10 }}
-                            placeholder="Enter number of meals per day"
-                            keyboardType="numeric"
-                            value={dietaryMeals}
-                            onChangeText={(text) => setDietaryMeals(text)}
-                        />
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <FontAwesome5 name="utensils" size={20} color="#666" style={{ marginRight: 10 }} />
+                            <TextInput
+                                containerStyle={{ marginBottom: 5, marginTop: 10 }}
+                                placeholder="Enter number of meals per day"
+                                keyboardType="numeric"
+                                value={dietaryMeals}
+                                onChangeText={(text) => setDietaryMeals(text)}
+                            />
+                        </View>
+
                         <Button
                             text={loading ? "Loading..." : "Calculate Emissions"}
                             onPress={calculateEmissions}

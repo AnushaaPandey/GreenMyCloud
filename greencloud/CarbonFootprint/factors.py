@@ -117,7 +117,6 @@ def calculate_total_and_average_emissions(CLIMATIQ_API_KEY, transportation_mode,
         screentime_emissions * 365 + 
         dietary_emissions * 365
     )
-
     total_count = 5
     average_emissions = total_emissions / total_count
 

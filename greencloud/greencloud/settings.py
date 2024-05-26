@@ -46,7 +46,7 @@ EMAIL_HOST_USER = "cloudg586@gmail.com"
 EMAIL_HOST_PASSWORD = "finalyearproject"
 EMAIL_HOST_FROM = "cloudg586@gmail.com"
 EMAIL_USE_TLS = True
-
+APPEND_SLASH = False
 
 INSTALLED_APPS = [
     'django.contrib.admin',

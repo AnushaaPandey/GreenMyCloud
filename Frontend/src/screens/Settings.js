@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 const SettingsScreen = ({ navigation }) => {
   const settingsOptions = [
-    { id: '1', title: 'User Profile', icon: 'person' },
     { id: '2', title: 'FAQ', icon: 'help-circle' },
     { id: '3', title: 'Change Password', icon: 'key' },
     { id: '4', title: 'Logout', icon: 'log-out' },
@@ -23,9 +22,6 @@ const SettingsScreen = ({ navigation }) => {
 
   const handleSettingPress = (item) => {
     switch (item.id) {
-      case '1':
-        navigation.navigate('UserProfile');
-        break;
       case '2':
         navigation.navigate('FAQScreen');
         break;
